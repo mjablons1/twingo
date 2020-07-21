@@ -1,0 +1,5 @@
+.idea/
+COMMANDS.txt
+*.docx
+*.pdf
+__pycache__/

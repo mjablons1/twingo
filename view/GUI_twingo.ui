@@ -1,0 +1,1542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>864</width>
+    <height>565</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Twingo</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_fm_max_f">
+        <property name="text">
+         <string>(max/set) f [Hz]:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBox_out_sig_type">
+        <property name="toolTip">
+         <string>select output signal and analysis type</string>
+        </property>
+        <property name="currentText">
+         <string>sine</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>sine</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>square</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>white noise</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>impulse</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>sweep</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ess</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>zeros</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLineEdit" name="lineEdit_max_f">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>set/end freqency / higher cutoff of the filter</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="pushButton_stop">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>stop continuous measurement</string>
+        </property>
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_min_f">
+        <property name="text">
+         <string>min f [Hz]:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="lineEdit_min_f">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>start freqency of the sweeps /lower cutoff of the filter.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>output sig.:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboBox_sig_len">
+        <property name="toolTip">
+         <string>finite measurement length</string>
+        </property>
+        <property name="editable">
+         <bool>false</bool>
+        </property>
+        <property name="currentText">
+         <string>1</string>
+        </property>
+        <property name="currentIndex">
+         <number>2</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>0.25</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>0.5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>6</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>7</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>8</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>9</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>10</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>15</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>20</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>sig length [s]:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="pushButton_start">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>5</red>
+              <green>112</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>5</red>
+              <green>112</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>5</red>
+              <green>112</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>start measurement</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>START</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="buffer_indicator_label">
+        <property name="font">
+         <font>
+          <pointsize>6</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer_14">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>65</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget_main">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tab_settings">
+       <attribute name="title">
+        <string>Settings</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pushButton_detectDAQ">
+            <property name="toolTip">
+             <string>detect data acquistion devices</string>
+            </property>
+            <property name="text">
+             <string>Detect DAQ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_dev_list">
+            <property name="toolTip">
+             <string>Select DAQ device from the list</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="3" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <layout class="QFormLayout" name="formLayout">
+            <property name="horizontalSpacing">
+             <number>7</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_7">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>DAQ Input settings</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Ch.A</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBox_ai_a">
+              <property name="toolTip">
+               <string>Select input channel A</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Ch.B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="comboBox_ai_b">
+              <property name="toolTip">
+               <string>Select input channel B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Config</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="comboBox_ai_terminal_cfg">
+              <property name="toolTip">
+               <string>Select input configuration</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Max limt [V]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="comboBox_ai_max">
+              <property name="toolTip">
+               <string>Select upper input signal limit</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Min. limit [V]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QComboBox" name="comboBox_ai_min">
+              <property name="toolTip">
+               <string>Select lower input signal limit</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Fs [Hz]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QComboBox" name="comboBox_ai_fs"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_8">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>DAQ Output settings</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Ch.A</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBox_ao_a">
+              <property name="toolTip">
+               <string>Select first output channel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Ch.B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="comboBox_ao_b">
+              <property name="toolTip">
+               <string>Select second output channel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="Label">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Config</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="comboBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Max limit [V]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="comboBox_ao_max">
+              <property name="toolTip">
+               <string>Set upper ouput signal limit</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>Min limit [V]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QComboBox" name="comboBox_ao_min">
+              <property name="toolTip">
+               <string>Set lower output signal limit</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>Fs [Hz]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QComboBox" name="comboBox_ao_fs"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_cm">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <attribute name="title">
+        <string>Continuous Meas</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="tabWidget_cm">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <widget class="QWidget" name="tab_cm_timeseries">
+           <attribute name="title">
+            <string>timeseries</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="cm_tm_verticalLayout"/>
+            </item>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <spacer name="horizontalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_26">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Time (&lt;b&gt;s&lt;/b&gt;)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_cm_tm_hold_a">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="toolTip">
+                 <string>hold ch. A plot</string>
+                </property>
+                <property name="text">
+                 <string>hold A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_cm_tm_hold_b">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="toolTip">
+                 <string>hold ch.B plot</string>
+                </property>
+                <property name="text">
+                 <string>hold B</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_cm_spectrum">
+           <attribute name="title">
+            <string>spectrum</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="cm_sp_verticalLayout"/>
+            </item>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>window:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_cm_window_type">
+                <property name="toolTip">
+                 <string>select fft window type</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>blackmanharris</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>hamming</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>hann</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blackman</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>boxcar</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>flattop</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>size:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_cm_window_size">
+                <property name="toolTip">
+                 <string>select fft window length</string>
+                </property>
+                <property name="currentText">
+                 <string/>
+                </property>
+                <property name="currentIndex">
+                 <number>-1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_27">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Frequency (&lt;b&gt;Hz&lt;/b&gt;)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_cm_sp_hold_a">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="toolTip">
+                 <string>hold ch.A plot</string>
+                </property>
+                <property name="text">
+                 <string>hold A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_cm_sp_hold_b">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="toolTip">
+                 <string>hold ch.B plot</string>
+                </property>
+                <property name="text">
+                 <string>hold B</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>(max/set) f [Hz]:</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLCDNumber" name="lcdNumber">
+             <property name="value" stdset="0">
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="intValue" stdset="0">
+              <number>1000</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDial" name="dial_cm_vfine_freq">
+             <property name="toolTip">
+              <string>freq dial 1Hz -100 Hz</string>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>10</number>
+             </property>
+             <property name="value">
+              <number>50</number>
+             </property>
+             <property name="wrapping">
+              <bool>false</bool>
+             </property>
+             <property name="notchTarget">
+              <double>2.000000000000000</double>
+             </property>
+             <property name="notchesVisible">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDial" name="dial_cm_fine_freq">
+             <property name="toolTip">
+              <string>freq dial 0Hz -1kHz</string>
+             </property>
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="singleStep">
+              <number>10</number>
+             </property>
+             <property name="pageStep">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>500</number>
+             </property>
+             <property name="tracking">
+              <bool>true</bool>
+             </property>
+             <property name="wrapping">
+              <bool>false</bool>
+             </property>
+             <property name="notchTarget">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="notchesVisible">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDial" name="dial_cm_coarse_freq">
+             <property name="toolTip">
+              <string>freq dial 0Hz -20kHz</string>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>20000</number>
+             </property>
+             <property name="singleStep">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1000</number>
+             </property>
+             <property name="value">
+              <number>1000</number>
+             </property>
+             <property name="tracking">
+              <bool>true</bool>
+             </property>
+             <property name="invertedAppearance">
+              <bool>false</bool>
+             </property>
+             <property name="wrapping">
+              <bool>false</bool>
+             </property>
+             <property name="notchTarget">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="notchesVisible">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_fm">
+       <attribute name="title">
+        <string>Finite Meas</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QTabWidget" name="tabWidget_fm">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_timeseries">
+           <attribute name="title">
+            <string>timeseries</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="1" column="0">
+             <layout class="QVBoxLayout" name="tm_verticalLayout"/>
+            </item>
+            <item row="2" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_23">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Time (&lt;b&gt;s&lt;/b&gt;)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_tm_hold_a">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="statusTip">
+                 <string>hold ch. A plot</string>
+                </property>
+                <property name="text">
+                 <string>hold A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_tm_hold_b">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="statusTip">
+                 <string>hold ch. B plot</string>
+                </property>
+                <property name="text">
+                 <string>hold B</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_spectrum">
+           <attribute name="title">
+            <string>spectrum</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="4" column="0">
+             <layout class="QVBoxLayout" name="sp_verticalLayout"/>
+            </item>
+            <item row="5" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_19">
+                <property name="text">
+                 <string>window:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_fm_window_type">
+                <property name="minimumSize">
+                 <size>
+                  <width>117</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>select fft window type</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>blackmanharris</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>hann</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>hamming</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blackman</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>boxcar</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>flattop</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>size:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_fm_window_size">
+                <property name="toolTip">
+                 <string>select fft window length</string>
+                </property>
+                <property name="currentIndex">
+                 <number>-1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_24">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Frequency (&lt;b&gt;Hz&lt;/b&gt;)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_sp_hold_a">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="statusTip">
+                 <string>hold ch. A plot</string>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>hold A</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_sp_hold_b">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="statusTip">
+                 <string>hold ch. B plot</string>
+                </property>
+                <property name="text">
+                 <string>hold B</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_spg">
+           <attribute name="title">
+            <string>spectrogram</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="1" column="0">
+             <layout class="QVBoxLayout" name="spg_verticalLayout"/>
+            </item>
+            <item row="2" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>window:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_fm_spg_window_type">
+                <property name="toolTip">
+                 <string>select fft window type</string>
+                </property>
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>hann</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>hamming</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blackman</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>blackmanharris</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>flattop</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>size:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_fm_spg_window_size">
+                <property name="toolTip">
+                 <string>select fft window length</string>
+                </property>
+                <property name="currentIndex">
+                 <number>-1</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_25">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Time (&lt;b&gt;s&lt;/b&gt;)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>chan:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_fm_spg_chan">
+                <property name="toolTip">
+                 <string>select input chanel for spectrogram</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>A</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>B</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_spg_log_amp">
+                <property name="toolTip">
+                 <string>set color scale to logarithmic</string>
+                </property>
+                <property name="text">
+                 <string>Log(Amp)</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox_fm_log_f">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Log(f)</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>864</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHW_config">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menuHW_config"/>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>comboBox_ai_a</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ai_b</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>374</x>
+     <y>197</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ai_b</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ai_a</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>186</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>184</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ao_a</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ao_b</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>560</x>
+     <y>181</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>562</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ao_b</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ao_a</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>737</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>731</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ai_max</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ai_min</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ai_min</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ai_max</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>250</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>261</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ao_max</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ao_min</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>641</x>
+     <y>267</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>646</x>
+     <y>287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_ao_min</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>comboBox_ao_max</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>783</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>779</x>
+     <y>257</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
