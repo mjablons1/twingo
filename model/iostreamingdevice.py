@@ -44,8 +44,12 @@ def io_streaming_device_discovery():
     devices_found = None
 
     if nidaqmx_is_present:
-        system = ni.system.System.local()
-        devices_found = dict.fromkeys(system.devices.device_names, NiDaqStreamingDevice)
+        try:
+            system = ni.system.System.local()
+            devices_found = dict.fromkeys(system.devices.device_names, NiDaqStreamingDevice)
+        except OSError:
+            print("NIDAQmx system drivers are probably not present in your system.\n "
+                  "If you do not wish to use NI Harware anyway please uninstall the nidaqmx package from this environment to prevent this warning.")
 
     if pyaudio_is_present:
         # check if default I/O devices are present
