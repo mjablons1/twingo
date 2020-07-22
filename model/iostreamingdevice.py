@@ -41,7 +41,7 @@ def io_streaming_device_discovery():
     my_daq = devices_found['Dev1']('Dev1')
     """
 
-    devices_found = None
+    devices_found = {}
 
     if nidaqmx_is_present:
         try:
@@ -56,13 +56,11 @@ def io_streaming_device_discovery():
         try:
             def_input_device_name = pa.get_default_input_device_info()["name"]
             def_output_device_name = pa.get_default_output_device_info()["name"]
+            dev_name = def_input_device_name + ' / ' + def_output_device_name
+            pa_device = {dev_name: PyAudioSoundStreamingDevice}
+            devices_found.update(pa_device)
         except IOError:
             print('No default audio I/O devices could be found in your system.')
-            return
-
-        dev_name = def_input_device_name + ' / ' + def_output_device_name
-        pa_device = {dev_name: PyAudioSoundStreamingDevice}
-        devices_found.update(pa_device)
 
     # merege the two dictionaries:
     # device_list = [ni_devices_found, pa_devices_found]
