@@ -387,9 +387,9 @@ class FunctionGenerator:
         :param <float> amplitude: amplitude of the output signal
         :param <int> nr_of_chan: number of output channels governing dimensions of the output signal
         :param <str> function_type: indicates which function will be generated.
-        Valid keys are 'sine', 'square', 'sweep', 'ess', 'white noise', 'impulse'.
+        Valid keys are 'sine', 'square', 'sweep', 'ess', 'white noise', 'impulse', 'zeros', 'random'.
         """
-        self.AA_FILTER_ORDER = 4 # these are default values unless user calls the corresponding set method
+        self.AA_FILTER_ORDER = 4
         self.AA_FILTER_NYQUIST_COEF = 0.7
         self.nr_of_chan = nr_of_chan
         self.amplitude = amplitude

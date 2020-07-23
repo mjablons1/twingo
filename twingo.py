@@ -134,7 +134,6 @@ class TwingoExec:
         # settings tab:
         self.ui.pushButton_detectDAQ.clicked.connect(self.on_pushButton_detectDAQ_clicked)
         self.ui.comboBox_dev_list.activated.connect(self.on_comboBox_dev_list_activated)
-
         self.ui.comboBox_ai_a.activated.connect(self.on_comboBox_ai_ab_activated)
         self.ui.comboBox_ai_b.activated.connect(self.on_comboBox_ai_ab_activated)
         self.ui.comboBox_ao_a.activated.connect(self.on_comboBox_ao_ab_activated)
@@ -144,9 +143,7 @@ class TwingoExec:
         self.ui.comboBox_ai_min.activated.connect(self.on_comboBox_ai_min_max_activated)
         self.ui.comboBox_ao_max.activated.connect(self.on_comboBox_ao_min_max_activated)
         self.ui.comboBox_ao_min.activated.connect(self.on_comboBox_ao_min_max_activated)
-
-        self.ui.comboBox_ai_fs.activated.connect(
-            self.on_comboBox_ai_fs_activated)  # TOOD why not "CurrentIndex changed"
+        self.ui.comboBox_ai_fs.activated.connect(self.on_comboBox_ai_fs_activated)
         self.ui.comboBox_ao_fs.activated.connect(self.on_comboBox_ao_fs_activated)
         self.ui.comboBox_ao_max.activated.connect(self.on_comboBox_ao_max_activated)
 
@@ -154,8 +151,7 @@ class TwingoExec:
         self.ui.comboBox_sig_len.activated.connect(self.on_comboBox_sig_len_activated)
         self.ui.comboBox_out_sig_type.activated.connect(self.on_comboBox_out_sig_activated)
         self.ui.lineEdit_min_f.editingFinished.connect(self.on_lineEdit_min_f_editingFinished)
-        self.ui.lineEdit_max_f.editingFinished.connect(
-            self.on_lineEdit_max_f_editingFinished)
+        self.ui.lineEdit_max_f.editingFinished.connect(self.on_lineEdit_max_f_editingFinished)
         self.ui.pushButton_start.clicked.connect(self.on_pushButton_start_clicked)
         self.ui.pushButton_stop.clicked.connect(self.on_pushButton_stop_clicked)
 
@@ -176,21 +172,15 @@ class TwingoExec:
         self.ui.comboBox_fm_spg_window_type.activated.connect(self.on_comboBox_fm_spg_window_type_activated)
 
         # continuous measurement widgets
-        # self.ui.tabWidget_cm.currentChanged.connect(self.timer_switch_emit)
         self.ui.tabWidget_cm.currentChanged.connect(self.signal_switch)
-        # instead of calling timer_switch from the callbacks of the tab widget we could instead emit a trigger during tab switch to which the timer_switch is a slot,
-        # but this does not seem to be necessary becasuse the Qtimers are readily instantiated in the main thread which is also the thread of other gui callbacks (?), so we can controll them from within gui callbacks as well.
-        # self.timer_switch_signal.connect(self.timer_switch)
         # timeseries
         self.ui.checkBox_cm_tm_hold_a.toggled.connect(self.on_checkBox_cm_tm_hold_a_toggled)
         self.ui.checkBox_cm_tm_hold_b.toggled.connect(self.on_checkBox_cm_tm_hold_b_toggled)
-
         # spectrum
         self.ui.comboBox_cm_window_type.activated.connect(self.on_comboBox_cm_window_type_activated)
         self.ui.comboBox_cm_window_size.activated.connect(self.on_comboBox_cm_window_size_activated)
         self.ui.checkBox_cm_sp_hold_a.toggled.connect(self.on_checkBox_cm_sp_hold_a_toggled)
         self.ui.checkBox_cm_sp_hold_b.toggled.connect(self.on_checkBox_cm_sp_hold_b_toggled)
-
         # common
         self.ui.dial_cm_vfine_freq.valueChanged.connect(self.on_dial_value_changed)
         self.ui.dial_cm_fine_freq.valueChanged.connect(self.on_dial_value_changed)
@@ -237,7 +227,10 @@ class TwingoExec:
         self.update_fm_spg()
 
     def on_comboBox_ai_ab_activated(self):
-        # TODO some callbacks are coded in the uic generated file aready and they can theoretically create race condition with the checks below. Its probably a good idea to remove the callbacks from Designer and hard code them here by creating separate, dedicated  "on_comboBox_index_changed" callbacks for each  that contain both functionalities without allowing race.
+        # TODO some callbacks are coded in the uic generated file already and they can theoretically create race
+        #  condition with the checks below. Its probably a good idea to remove the callbacks from Designer and hard
+        #  code them here by creating separate, dedicated  "on_comboBox_index_changed" callbacks for each  that
+        #  contain both functionalities without allowing race.
         self.e.streaming_device.ai_a_name = self.ui.comboBox_ai_a.currentText()
         self.e.streaming_device.ai_b_name = self.ui.comboBox_ai_b.currentText()
         self.print_qt('Input channels : A:{} B:{}'.format(self.e.streaming_device.ai_a_name,
@@ -275,7 +268,8 @@ class TwingoExec:
         if self.e.fm_result_y is None:
             raise NoInputData('No finite input data is available. Press START to run a measurement.')
 
-    # TODO this is a lot pattern repetition. Perhaps some other design pattern (prototype?) can be used to def any number of hold callbacks with equivalent functionality
+    # TODO this is a lot pattern repetition. Perhaps some design pattern (prototype?) can be used to def any number
+    #  of hold callbacks with equivalent functionality?
     def on_checkBox_cm_tm_hold_a_toggled(self):
         try:
             if self.ui.checkBox_cm_tm_hold_a.isChecked():
@@ -488,7 +482,6 @@ class TwingoExec:
         self.print_qt('Set/End frequency changed: {}Hz.'.format(self.e.streaming_device.function_gen.freq1))
         self.ui.lcdNumber.display(new_value)
         # ensure dials are in consistent position with the current set freq. and allow exploration in its vicinity
-        # it seems that there is no method implemented to set the slider value without causing the valueChanged signal from being emited
         self.align_dials_position()
 
     def align_dials_position(self):
@@ -603,7 +596,6 @@ class TwingoExec:
 
         self.align_dials_position()
         self.set_plot_limits()
-
         self.e.streaming_device.input_frame_ready_signal.connect(self.update_cm_tm_plot)
 
         self.ui.pushButton_start.setEnabled(True)
@@ -611,7 +603,7 @@ class TwingoExec:
         self.ui.tabWidget_main.setTabEnabled(self.CONTINUOUS_MEAS_TAB_INDEX, True)
 
     def set_settings_page(self):
-        self.set_comboBoxes_ai()  # recreate all properties that are looked for inside, in the NiDaqStreamingDevice
+        self.set_comboBoxes_ai()
         self.set_comboBoxes_ao()
         self.set_comboBoxes_ai_range()
         self.set_comboBoxes_ao_range()
@@ -680,7 +672,7 @@ class TwingoExec:
         self.ui.comboBox_ao_min.clear()
 
         counter = 0
-        for voltage in self.e.streaming_device.limits.ao_voltage_rngs:  # this should default to the smallest output range (safest)
+        for voltage in self.e.streaming_device.limits.ao_voltage_rngs:
             if counter % 2 != 1:
                 self.ui.comboBox_ao_max.addItem(str(voltage))
             else:
@@ -691,7 +683,10 @@ class TwingoExec:
         self.ui.comboBox_ai_terminal_cfg.clear()
         for item in self.e.streaming_device.limits.terminal_configs:
             self.ui.comboBox_ai_terminal_cfg.addItem(item)
-            # its possible to use the comboBox string entries later as keywords to the enumerated type that corresponds to them. i.e. nidaqmx.constants.TerminalConfiguration['RSE'] returns the enum same as nidaqmx.constants.TerminalConfiguration.RSE. More documentation here: https://docs.python.org/3/library/enum.html
+            # its possible to use the comboBox string entries later as keywords to the enumerated type that
+            # corresponds to them. i.e. nidaqmx.constants.TerminalConfiguration['RSE'] returns the enum same as
+            # nidaqmx.constants.TerminalConfiguration.RSE. More documentation here:
+            # https://docs.python.org/3/library/enum.html
 
     def on_pushButton_start_clicked(self):
         if self.ui.tabWidget_main.currentIndex() == self.FINITE_MEAS_TAB_INDEX:
@@ -749,7 +744,7 @@ class TwingoExec:
         fm_tm_plot_item = self.fm_tm_plot_widget.getPlotItem()
         fm_tm_plot_item.showGrid(True, True, alpha=1)
         fm_tm_plot_item.setLabel('left', 'Lvl', units='<b>V</b>')
-        #fm_tm_plot_item.setLabel('bottom', 'time', units='s')
+        #fm_tm_plot_item.setLabel('bottom', 'time', units='s') #
 
         for chan_index in range(config.NR_OF_CHANNELS_TO_PLOT):
             this_plot_data_item = fm_tm_plot_item.plot(pen=self.pen_case[chan_index])
@@ -761,8 +756,8 @@ class TwingoExec:
         # fm_tm_plot_item.vb.setLimits(yMin=self.streaming_device.ai_min_val, yMax=self.streaming_device.ai_max_val)
 
     def place_fm_sp_graph(self):
-        self.fm_sp_plot_widget = pg.PlotWidget(name='Spectral Analysis')  # Create pyqtgraph widget plot
-        self.ui.sp_verticalLayout.addWidget(self.fm_sp_plot_widget)  # Add pyqtgraph plotWidget to MainWindow layout
+        self.fm_sp_plot_widget = pg.PlotWidget(name='Spectral Analysis')
+        self.ui.sp_verticalLayout.addWidget(self.fm_sp_plot_widget)
         fm_sp_plot_item = self.fm_sp_plot_widget.getPlotItem()
         fm_sp_plot_item.setLogMode(True, False)
         fm_sp_plot_item.showGrid(True, True, alpha=1)
@@ -781,10 +776,10 @@ class TwingoExec:
 
     def place_fm_spg_graphics(self):
         self.fm_spg_widget = pg.GraphicsLayoutWidget()
-        self.ui.spg_verticalLayout.addWidget(self.fm_spg_widget)  # Add pyqtgraph graphics wideget to MainWindow layout
+        self.ui.spg_verticalLayout.addWidget(self.fm_spg_widget)
 
         # view = self.ui.graphics_widget.addViewBox()
-        self.graphics_plot = self.fm_spg_widget.addPlot()  # will generate the view and axes autmatically
+        self.graphics_plot = self.fm_spg_widget.addPlot()  # will generate the view and axes automatically
         # Add labels to the axis
         # self.graphics_plot.setLabel('bottom', 'Time', units='s') # this way lots of space is wasted
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
@@ -804,12 +799,6 @@ class TwingoExec:
         self.fm_spg_widget.addItem(self.hist)
 
         self.hist.gradient.restoreState(config.default_spg_hist_gradient)
-
-        # self.hist.gradient.restoreState(
-        #     {'mode': 'rgb',
-        #      'ticks': [(0.5, (0, 182, 188, 255)),
-        #                (1.0, (246, 111, 0, 255)),
-        #                (0.0, (75, 0, 113, 255))]})
 
     def place_cm_tm_graph(self):
         self.cm_tm_plot_widget = pg.PlotWidget(name='Continuous Timeseries')  # Create pyqtgraph widget plot
@@ -919,16 +908,8 @@ class TwingoExec:
 
         self.hist.setLevels(np.min(spg), np.max(spg))
 
-        # try:
-        #     self.hist.setLevels(np.min(spg), np.max(spg))
-        # except ValueError as err:
-        #     print(err)
-        #     self.print_qt('Could not calculate histogram')
-        #     return
-
         self.img.resetTransform()  # Ensures that the previous transformation does not interfere with the current one
         self.img.scale(t[-1] / np.size(spg, axis=1), f[-1] / np.size(spg, axis=0))
-
         self.img.setImage(spg.T)
 
         # Limit panning/zooming to the spectrogram

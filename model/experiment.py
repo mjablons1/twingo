@@ -116,11 +116,6 @@ class Experiment:
         self.fm_result_y = np.concatenate((self.exp_sweep_sine_response,
                                            self.inverse_decay_filter_response), axis=1)
 
-    # def get_timebase
-    # self.ess_time_base = np.arange(self.streaming_device._input_frame_len*2, dtype=np.float64) / self.streaming_device.ai_fs
-
-    # self.ess_time_base = np.tile(time_series, (self.streaming_device.get_nchan(), 1))
-
     def calculate_cm_fft(self):
         input_frame = self.streaming_device.get_monitor() * self._cm_win
         cm_fft = np.fft.rfft(input_frame)
@@ -196,13 +191,6 @@ if __name__ == "__main__":
 
         print('Instantiating Experiment')
         exp = Experiment(daq)
-        #for key, value in exp.__dict__.items():
-        #    print(key, ' = ', value)
-
-        # exp.streaming_device.io_start()
-        # sleep(2)
-        # exp.streaming_device.io_stop()
-        # sleep(2)
 
         exp.streaming_device.set_mode_to_finite(3)
         exp.start_fm_ess_experiment()

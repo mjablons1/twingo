@@ -346,20 +346,30 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         # overwrite the base class constants:
         self.CM_INPUT_FRAME_LEN = 2048  # use 2**n only
         self.CM_INPUT_FRAMES_PER_BUFFER = 10
-        self.CM_OUTPUT_FRAME_LEN = self.CM_INPUT_FRAME_LEN * 2  # It seems that NIDAQ USB has issues with uneven timing for forth and back communications over USB at high sample rate and in combination with multiplexed input and non-multiplexed output this means the data rate capability of output is up to 2x that of the input. Setting 2x frame length on output helps to balance the transfer frequency out and results in 2x larger output buffer.
+        self.CM_OUTPUT_FRAME_LEN = self.CM_INPUT_FRAME_LEN * 2
+        # It seems that NIDAQ USB has issues with uneven timing for forth and back communications over USB at high
+        # sample rate and in combination with multiplexed input and non-multiplexed output this means the data rate
+        # capability of output is up to 2x that of the input. Setting 2x frame length on output helps to balance the
+        # transfer frequency out and results in 2x larger output buffer.
         self.CM_OUTPUT_FRAMES_PER_BUFFER = 10
 
         #self.FILTER_ORDER = 4
         self.AA_OUTPUT_FILTER_ORDER = 8
 
         self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_OVERWRITE_BEHAVIOUR = False
-        self.INPUT_OVERWRITE = False # for this property to take effect you must set applicable OVERRIDE to true
-        self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_BUFFER_SIZE = True  # ON NI6211 the default buffer size settings seems too small. Overwrite errors at high sampling rates are quite frequent.
+        self.INPUT_OVERWRITE = False # For this property to take effect you must set applicable OVERRIDE to true
+        self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_BUFFER_SIZE = True
+        # ON NI6211 the default buffer size settings seems too small. Overwrite errors at high sampling rates are
+        # quite frequent.
 
-        self.ATTEMPT_OVERRIDE_DEFAULT_UNDERFLOW_BEHAVIOR_TO_PAUSE = False #E.g. this is not implemented on NI6211
+        self.ATTEMPT_OVERRIDE_DEFAULT_UNDERFLOW_BEHAVIOR_TO_PAUSE = False # E.g. this is not implemented on NI6211
         self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_REGENERATION_MODE = False
-        self.ALLOW_OUTPUT_REGENERATION = True # On NI6211 output regen is default but I leave this default to true as fail-safe for adventurous users who will swithch OVERRIDE to True
-        self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_BUFFER_SIZE = True  # ON NI6211 the default buffer size settings seems too small. Its possible to run into buffer underflow condition at high sampling rates.
+        self.ALLOW_OUTPUT_REGENERATION = True
+        # On NI6211 output regen is default but I leave this default to true as fail-safe for adventurous users who
+        # will swithch OVERRIDE to True
+        self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_BUFFER_SIZE = True
+        # ON NI6211 the default buffer size settings seems too small. Its possible to run into buffer underflow
+        # condition at high sampling rates.
 
         self.ATTEMPT_OVERRIDE_DEFAULT_USB_XFER = False
         self.AO_USB_XFER_REQ_SIZE = 32768
@@ -607,7 +617,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.function_gen.reset_phase()
         self.function_gen.generate()
 
-        with ni.Task() as ao_task, ni.Task() as ai_task:  # enter drop down info to arguments while checking one by one that code still works
+        with ni.Task() as ao_task, ni.Task() as ai_task:
 
             ao_args = {'min_val': self.ao_min_val,
                        'max_val': self.ao_max_val}
@@ -647,7 +657,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
             # TODO implement upsampling at the experiment level instead
             # if self.input_upsampling_enabled is True:
             #     # upsample the input signal
-            #     upsampled_fs = self.ai_fs * self.UPSAMPLE_RATIO  # is this really required? the next time you run without upsampling will be with wrong ai_fs unless you correct for that
+            #     upsampled_fs = self.ai_fs * self.UPSAMPLE_RATIO
             #     self.input_frame, self.input_time_base = sig.resample(self.input_frame, upsampled_fs,
             #                                                           t=self.input_time_base, axis=1, window=None)
 
@@ -668,7 +678,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         #print(self.input_info)
         #print(self.output_info)
 
-        self._in_stream = None  # later consider renaming to _stream_reader and placing both libraries property already in the base class
+        #TODO consider renaming to _stream_reader and placing property already in the base class
+        self._in_stream = None
         self._out_stream = None
 
         self._set_limits()
@@ -713,7 +724,6 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         return supported_input_rates, supported_output_rates
 
     def start_continuous_acq_n_gen(self):
-        # self.input_frame = np.array([[], []])
         self._in_stream = pa.open(start=False, format=pyaudio.paFloat32,
                                   channels=self._nr_of_active_chans,
                                   rate=int(self.ai_fs),
@@ -730,7 +740,6 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
         print('Starting continuous acq')
         self._out_stream.start_stream()
-        # self.wait_event.wait(self.READ_OFFSET_MSEC / 1000)
         sleep(self.READ_OFFSET_MSEC / 1000)
         self._in_stream.start_stream()
         self.cm_measurement_is_running = True
@@ -743,7 +752,6 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         self.cm_measurement_is_running = False
 
     def reading_callback(self, in_data, frame_count, time_info, status):
-        # USE FRAME COUNT AND self.CM_INPUT_FRAME_LEN to predict roughly how many frames an allocated storage np.array should have and udpdate it with converted data from here. Later clip away any trailing NONEs
         self.read_lock.acquire()
         #self.mutex.lock()
         self.input_frame = wave_bytes_to_ndarray(in_data, self._nr_of_active_chans, np.float32)
