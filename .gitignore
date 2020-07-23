@@ -3,3 +3,4 @@ COMMANDS.txt
 *.docx
 *.pdf
 __pycache__/
+.db/
