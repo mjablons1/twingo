@@ -1,5 +1,8 @@
 # Twingo
 Twingo is a simple nidaqmx / pyAudio based, 2 channel speaker measurement application supporting continuous and finite test signals generation, acquisition and analysis.
+
+![Twingo_demo](docs/graphics/continuous_sequence.gif)
+
 # Installation
 The easiest way to install will be to use Anaconda python distribution and by creating a conda environment.
 
