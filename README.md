@@ -43,12 +43,21 @@ There are two types of hardware that twingo should support right out of the box.
 	
     _NOTE: Your system sound drivers often have various DSP effects enabled by default that can cause strange results (most frequent offender are equalizers, echo cancellation which attempts to remove your test signal from the output since it correlates well with the input or noise cancellation that attempt to dampen white noise test) Usually though, its possible to find the sound driver config application in your system and disable these effects._
 
+## Example analysis:
+1. High resolution harmonic distortion analysis (see demo at the top of this readme)
+2. Frequency response analysis with swept or white noise signal
+    ![Twingo_demo](docs/graphics/example_spectrum.png)
+3. Spectrogram for speaker / room ringing
+    ![Twingo_demo](docs/graphics/example_spectrogram.png)
+    
 # Note
-This project is my first real OOP application after several years spent just on scientific scripting in python therefore i expect that a lot of my code can be improved with your support and feedback. Thanks!
+This project is my first real OOP application after several years spent just on scientific scripting in Python therefore i expect that a lot of my code can be improved with your support and feedback. Thanks!
 
 The ESS measurement method is still experimental and you should not trust the results too much.
 
 # Acknowledgements
  - ["Python For the Lab" book by Aquiles Carratino](https://www.pythonforthelab.com/books/)
  	(without this book I'd have no clue how to structure my project)
- - 
+ - [https://www.schlameel.com](https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/)
+ - [schlameel/interleave.py](https://gist.github.com/schlameel/2ee338c35c72bedcdda58dcb121f2786)
+ - ...
