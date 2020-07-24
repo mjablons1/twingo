@@ -56,8 +56,8 @@ This project is my first real OOP application after several years spent just on 
 The ESS measurement method is still experimental and you should not trust the results too much.
 
 # Acknowledgements
- - ["Python For the Lab" book by Aquiles Carratino](https://www.pythonforthelab.com/books/)
+ - ["Python For the Lab" book by Aquiles Carattino](https://www.pythonforthelab.com/books/)
  	(without this book I'd have no clue how to structure my project)
- - [https://www.schlameel.com](https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/)
- - [schlameel/interleave.py](https://gist.github.com/schlameel/2ee338c35c72bedcdda58dcb121f2786)
- - ...
+ - [https://www.schlameel.com](https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/) & [schlameel/interleave.py](https://gist.github.com/schlameel/2ee338c35c72bedcdda58dcb121f2786)
+ - [Exponential Sine Sweep article from Will Fehlhaber](https://theaudioprogrammer.com/signal-analysis-ii-linear-vs-logarithmic-sine-sweep/)
+ -...
