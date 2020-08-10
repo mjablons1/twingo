@@ -285,7 +285,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
     # HERE ADD ANY CALCULATION OF IIR FILTER COEFFICIENTS OR FIR FRAME
 
     def set_mode_to_finite(self, fm_meas_time_sec):
-        print('iostreamingdevice: switching to finite mode')
+        #print('iostreamingdevice: switching to finite mode')
         self._acq_mode = 'finite'
         self.finite_frame_len_sec = fm_meas_time_sec
         self._input_frame_len = int(fm_meas_time_sec * self.ai_fs)
@@ -302,7 +302,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         #print('Input_frame_len changed to: {}'.format(self._input_frame_len))
 
     def set_mode_to_continuous(self):
-        print('iostreamingdevice: switching to continuous mode')
+        #print('iostreamingdevice: switching to continuous mode')
         self._acq_mode = 'conitnuous'
         self._input_frame_len = self.CM_INPUT_FRAME_LEN
         self.input_frame = np.zeros((self._nr_of_active_chans, self._input_frame_len), dtype=np.float64)
@@ -738,7 +738,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    stream_callback=self.writing_callback,
                                    frames_per_buffer=self.CM_OUTPUT_FRAME_LEN)
 
-        print('Starting continuous acq')
+        #print('Starting continuous acq')
         self._out_stream.start_stream()
         sleep(self.READ_OFFSET_MSEC / 1000)
         self._in_stream.start_stream()
