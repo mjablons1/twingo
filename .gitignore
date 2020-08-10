@@ -4,3 +4,4 @@ COMMANDS.txt
 *.pdf
 __pycache__/
 *.db
+start.bat
