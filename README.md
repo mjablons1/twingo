@@ -46,12 +46,14 @@ There are two types of hardware that twingo should support right out of the box.
 ## Example analysis:
 1. High resolution harmonic distortion analysis (see demo at the top of this readme)
 2. Frequency response analysis with swept or white noise signal
+
     ![example_spectrum](docs/graphics/example_spectrum.PNG)
 3. Spectrogram for speaker / room ringing
+
     ![example_spectrogram](docs/graphics/example_spectrogram.PNG)
     
 # Note
-This project is my first real OOP application after several years spent just on scientific scripting in Python therefore i expect that a lot of my code can be improved with your support and feedback. Thanks!
+This project is my first real OOP application after several years spent just on scientific scripting once in a while, therefore i expect that a lot of my code can be improved with your support and feedback. Thanks!
 
 The ESS measurement method is still experimental and you should not trust the results too much.
 
