@@ -60,4 +60,4 @@ The ESS measurement method is still experimental and you should not trust the re
  	(without this book I'd have no clue how to structure my project)
  - [https://www.schlameel.com](https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/) & [schlameel/interleave.py](https://gist.github.com/schlameel/2ee338c35c72bedcdda58dcb121f2786)
  - [Exponential Sine Sweep article from Will Fehlhaber](https://theaudioprogrammer.com/signal-analysis-ii-linear-vs-logarithmic-sine-sweep/)
- -...
+ - [Qt Dark Theme by Michael Herrmann](https://github.com/pyqt/examples/tree/_/src/09%20Qt%20dark%20theme)
