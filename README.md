@@ -35,11 +35,15 @@ There are two types of hardware that twingo should support right out of the box.
 1. Your NIDAQmx USB based National instruments data acquisition card
 
     I could only test my private NI6211 M series DAQ so far but the code may well work (or require little adjustments) with any other NIDAQmx driver-based National Instruments card as long as its equipped with both analog input and output ports.
-
+    
+    ![hw_setup_NIDAQmx](docs/graphics/hw_setup_NIDAQmx.svg)
+    
 2. Your current system default sound device input and output 
 
     This is later added feature and still requires much improvement but it expands the usability of the tool to any input and output sound hardware currently set default in your system.
-	I only tested on my Win 8.1 Pro against several different sound device configurations including external Digital/Analog converters and Bluetooth speakers. It should work likewise on Linux and Mac, let me know!
+	This way its possible to use your sound card I/O as well as external Digital/Analog converters or measure bluetooth speaker response. It should work likewise on Linux and Mac, let me know!
+	
+	![hw_setup_NIDAQmx](docs/graphics/hw_setup_soundcard.svg)
 	
     _NOTE: Your system sound drivers often have various DSP effects enabled by default that can cause strange results (most frequent offender are equalizers, echo cancellation which attempts to remove your test signal from the output since it correlates well with the input or noise cancellation that attempt to dampen white noise test) Usually though, its possible to find the sound driver config application in your system and disable these effects._
 
