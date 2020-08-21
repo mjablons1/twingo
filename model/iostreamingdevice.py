@@ -672,7 +672,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
     def __init__(self, hardware_id):
         super().__init__(hardware_id)
         print('Instantiating PyAudioSoundStreamingDevice')
-        self.READ_OFFSET_MSEC = 15
+        #self.READ_OFFSET_MSEC = 15
         self.input_info = pa.get_default_input_device_info()
         self.output_info = pa.get_default_output_device_info()
         #print(self.input_info)
@@ -740,7 +740,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
         #print('Starting continuous acq')
         self._out_stream.start_stream()
-        sleep(self.READ_OFFSET_MSEC / 1000)
+        sleep(config.pyaudio_read_offset_msec / 1000)
         self._in_stream.start_stream()
         self.cm_measurement_is_running = True
 
@@ -798,7 +798,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         latency_offset = self._out_stream.get_output_latency() + self._in_stream.get_input_latency()
 
         self._out_stream.start_stream()
-        sleep(self.READ_OFFSET_MSEC / 1000)
+        sleep(config.pyaudio_read_offset_msec / 1000)
         self._in_stream.start_stream()
 
         sleep(self.finite_frame_len_sec + latency_offset)

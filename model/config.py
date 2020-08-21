@@ -19,3 +19,5 @@ default_fm_spg_window_size = 2**11
 spg_window_overlap_skip_pts = 128
 
 default_pyAudio_paFloat32_level_range = [1.0, -1.0]
+
+pyaudio_read_offset_msec = 140  # allows to manually adjust the input and output start synchronization for pyAudio dev
