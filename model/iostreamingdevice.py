@@ -690,13 +690,19 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         self.limits.supported_input_rates, self.limits.supported_output_rates = self.get_supported_sampling_rates()
 
         # question driver about device properties
-        self.limits.ao_physical_chans = \
-            ['Ch:' + str(chan_index) for chan_index in range(self.output_info['maxOutputChannels'])]
+
+        # map only first two channels as available since for multichannel audio interfaces pyAudio will not allow you
+        # to choose which two you wish to use anyway.
+        self.limits.ao_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
+        # ['Ch:' + str(chan_index) for chan_index in range(self.output_info['maxOutputChannels'])]
+        # https://stackoverflow.com/questions/60057146/how-to-select-input-channels-like-mapping-in-sounddevice-with-pyaudio
         self.limits.ao_min_rate = min(self.limits.supported_output_rates)
         self.limits.ao_max_rate = max(self.limits.supported_output_rates)
         self.limits.ao_voltage_rngs = config.default_pyAudio_paFloat32_level_range
-        self.limits.ai_physical_chans = \
-            ['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
+        # map only first two channels as available since for multichannel audio interfaces pyAudio will not allow you
+        # to choose which two you wish to use anyway.
+        self.limits.ai_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
+            #['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
         self.limits.ai_min_rate = min(self.limits.supported_input_rates)
         self.limits.ai_max_single_chan_rate = max(self.limits.supported_input_rates)
         self.limits.ai_max_two_chan_rate = max(self.limits.supported_input_rates)
