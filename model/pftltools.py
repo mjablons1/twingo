@@ -38,6 +38,16 @@ class FrequencyRangeIncorrect(Error):
 #         return func(input_text)
 #     return func_wrapper
 
+class Timeit:
+    def __init__(self):
+        self.start_time = None
+
+    def __enter__(self):
+        self.start_time = now()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        delta_seconds = now() - self.start_time
+        print(f'Clause finished in {delta_seconds}s.')
 
 def filterfilter(input_signal, fs, f0, f1, filter_order):
     '''
