@@ -115,13 +115,9 @@ class TwingoExec:
         self.buffer_indicator_timer = QtCore.QTimer()
         self.buffer_indicator_timer.timeout.connect(self.update_output_buffer_indicator)
 
-        # self.fft_timer = QtCore.QTimer()
-        # self.fft_timer.timeout.connect(self.update_cm_fft_plot)
-
         # self.timeseries_timer = QtCore.QTimer()
         # self.timeseries_timer.timeout.connect(self.update_cm_timeseries_plot)
 
-        ##################################
         self.devices_name_to_model = None
         self.exp = None
 
@@ -393,57 +389,6 @@ class TwingoExec:
 
         return num
 
-    def enable_widgets_from_context(self): #TODO unused
-        if self.ui.comboBox_out_sig_type.currentText() == 'sine' or self.ui.comboBox_out_sig_type.currentText() == 'square':
-            self.ui.label_min_f.setDisabled(True)
-            self.ui.lineEdit_min_f.setDisabled(True)
-
-            # self.ui.checkBox_fm_input_filter.setChecked(False)
-            # self.ui.checkBox_fm_input_filter.setDisabled(True)
-            # self.ui.checkBox_fm_output_filter.setChecked(False)
-            # self.ui.checkBox_fm_output_filter.setDisabled(True)
-
-        elif self.ui.comboBox_out_sig_type.currentText() == 'white noise':
-            self.ui.label_min_f.setDisabled(False)
-            self.ui.lineEdit_min_f.setDisabled(False)
-
-            # self.ui.checkBox_fm_input_filter.setChecked(False)
-            # self.ui.checkBox_fm_input_filter.setEnabled(True)
-            #self.ui.checkBox_fm_output_filter.setChecked(True)
-            #self.ui.checkBox_fm_output_filter.setDisabled(True)
-
-        elif self.ui.comboBox_out_sig_type.currentText() == 'ess' or self.ui.comboBox_out_sig_type.currentText() == 'sweep':
-            self.ui.label_min_f.setDisabled(False)
-            self.ui.lineEdit_min_f.setDisabled(False)
-
-            # self.ui.checkBox_fm_input_filter.setChecked(True)
-            # self.ui.checkBox_fm_input_filter.setEnabled(True)
-            # self.ui.checkBox_fm_output_filter.setChecked(False)
-            # self.ui.checkBox_fm_output_filter.setEnabled(True)
-
-        elif self.ui.comboBox_out_sig_type.currentText() == 'impulse':
-            self.ui.label_min_f.setDisabled(False)
-            self.ui.lineEdit_min_f.setDisabled(False)
-
-            # self.ui.checkBox_fm_input_filter.setChecked(False)
-            # self.ui.checkBox_fm_input_filter.setEnabled(True)
-            # self.ui.checkBox_fm_output_filter.setChecked(True)
-            # self.ui.checkBox_fm_output_filter.setEnabled(False)
-        else:
-            self.ui.label_min_f.setDisabled(False)
-            self.ui.lineEdit_min_f.setDisabled(False)
-
-            # self.ui.checkBox_fm_input_filter.setChecked(False)
-            # self.ui.checkBox_fm_input_filter.setEnabled(True)
-            # self.ui.checkBox_fm_output_filter.setEnabled(True)
-            # self.ui.checkBox_fm_output_filter.setChecked(False)
-
-        # if (FFT_size > ((ai_fs * sig_len_sec)/2)):
-        #    # if less than 2 windows fit into the signal length propose upsampling
-        #    self.ui.checkBox_upsample.setChecked(True)
-        # else:
-        #    self.ui.checkBox_upsample.setChecked(False)
-
     def on_comboBox_ao_fs_activated(self):
         self.e.streaming_device.set_ao_fs(float(self.ui.comboBox_ao_fs.currentText()))
         self.print_qt('Output sampling rate changed: {}Hz.'.format(self.e.streaming_device.ao_fs))
@@ -531,7 +476,6 @@ class TwingoExec:
         else:
             # reminder for future expansion of tabs
             self.print_qt('WARNING: This tab does not define a specific streaming device mode')
-
 
     def update_current_fm_plot(self):
         try:
@@ -744,7 +688,7 @@ class TwingoExec:
         fm_tm_plot_item = self.fm_tm_plot_widget.getPlotItem()
         fm_tm_plot_item.showGrid(True, True, alpha=1)
         fm_tm_plot_item.setLabel('left', 'Lvl', units='<b>V</b>')
-        #fm_tm_plot_item.setLabel('bottom', 'time', units='s') #
+        #fm_tm_plot_item.setLabel('bottom', 'time', units='s')
 
         for chan_index in range(config.NR_OF_CHANNELS_TO_PLOT):
             this_plot_data_item = fm_tm_plot_item.plot(pen=self.pen_case[chan_index])
@@ -785,11 +729,7 @@ class TwingoExec:
         # If you include the units, Pyqtgraph automatically scales the axis and adjusts the SI prefix (in this case kHz)
         self.graphics_plot.setLabel('left', "Frequency", units='<b>Hz</b>')
 
-        # Interpret image data as row-major instead of col-major
-        # pg.setConfigOptions(imageAxisOrder='row-major')
-
         self.img = pg.ImageItem(border='w')
-        # view.addItem(self.ui.img)
         self.graphics_plot.addItem(self.img)
 
         # self.ui.graphics_plot.setLogMode(True, False)
@@ -801,8 +741,8 @@ class TwingoExec:
         self.hist.gradient.restoreState(config.default_spg_hist_gradient)
 
     def place_cm_tm_graph(self):
-        self.cm_tm_plot_widget = pg.PlotWidget(name='Continuous Timeseries')  # Create pyqtgraph widget plot
-        self.ui.cm_tm_verticalLayout.addWidget(self.cm_tm_plot_widget)  # Add pyqtgraph plotWidget to MainWindow layout
+        self.cm_tm_plot_widget = pg.PlotWidget(name='Continuous Timeseries')
+        self.ui.cm_tm_verticalLayout.addWidget(self.cm_tm_plot_widget)
         cm_tm_plot_item = self.cm_tm_plot_widget.getPlotItem()
         # cm_tm_plot_item.vb.disableAutoRange()
         # cm_tm_plot_item.vb.setLimits(ymin=self.streaming_device.ai_min_val,ymax=self.streaming_device.ai_max_val)
@@ -816,8 +756,8 @@ class TwingoExec:
             self.cm_tm_plot_hold_data_items.append(this_plot_data_item)
 
     def place_cm_sp_graph(self):
-        self.cm_sp_plot_widget = pg.PlotWidget(name='Continuous Spectral Analysis')  # Create pyqtgraph widget plot
-        self.ui.cm_sp_verticalLayout.addWidget(self.cm_sp_plot_widget)  # Add pyqtgraph plotWidget to MainWindow layout
+        self.cm_sp_plot_widget = pg.PlotWidget(name='Continuous Spectral Analysis')
+        self.ui.cm_sp_verticalLayout.addWidget(self.cm_sp_plot_widget)
         cm_sp_plot_item = self.cm_sp_plot_widget.getPlotItem()
         cm_sp_plot_item.vb.setLimits(yMin=config.CM_SP_GRAPH_MIN_dB_LIMIT, yMax=config.CM_SP_GRAPH_MAX_dB_LIMIT)
         cm_sp_plot_item.setRange(yRange=(config.CM_SP_GRAPH_MIN_dB_LIMIT, config.CM_SP_GRAPH_MAX_dB_LIMIT),
