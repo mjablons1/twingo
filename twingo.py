@@ -97,7 +97,7 @@ class TwingoExec:
 
         # paint the background of hold items with the same color as pen assigned to hold plots:
         hold_checkbox_style_sheet_strings = \
-            ['color: rgb(0, 0, 0); background-color:rgb{}'.format(self.pen_case[chan_index].color().getRgb()) for
+            [f'color: rgb(0, 0, 0); background-color:rgb{self.pen_case[chan_index].color().getRgb()}' for
              chan_index in range(config.NR_OF_CHANNELS_TO_PLOT)]
 
         try:
@@ -229,31 +229,29 @@ class TwingoExec:
         #  contain both functionalities without allowing race.
         self.e.streaming_device.ai_a_name = self.ui.comboBox_ai_a.currentText()
         self.e.streaming_device.ai_b_name = self.ui.comboBox_ai_b.currentText()
-        self.print_qt('Input channels : A:{} B:{}'.format(self.e.streaming_device.ai_a_name,
-                                                          self.e.streaming_device.ai_b_name))
+        self.print_qt(f'Input channels : A:{self.e.streaming_device.ai_a_name} B:{self.e.streaming_device.ai_b_name}')
 
     def on_comboBox_ao_ab_activated(self):
         self.e.streaming_device.ao_a_name = self.ui.comboBox_ao_a.currentText()
         self.e.streaming_device.ao_b_name = self.ui.comboBox_ao_b.currentText()
-        self.print_qt('Output channels : A:{} B:{}'.format(self.e.streaming_device.ao_a_name,
-                                                           self.e.streaming_device.ao_b_name))
+        self.print_qt(f'Output channels : A:{self.e.streaming_device.ao_a_name} B:{self.e.streaming_device.ao_b_name}')
 
     def on_comboBox_ai_min_max_activated(self):
         self.e.streaming_device.ai_min_val = float(self.ui.comboBox_ai_min.currentText())
         self.e.streaming_device.ai_max_val = float(self.ui.comboBox_ai_max.currentText())
-        self.print_qt('Input voltage limit min:{}V, max:{}V'.format(self.e.streaming_device.ai_min_val,
-                                                                    self.e.streaming_device.ai_max_val))
+        self.print_qt(f'Input voltage limit min:{self.e.streaming_device.ai_min_val}V,'
+                      f' max:{self.e.streaming_device.ai_max_val}V')
         self.set_plot_limits()
 
     def on_comboBox_ao_min_max_activated(self):
         self.e.streaming_device.ao_min_val = float(self.ui.comboBox_ao_min.currentText())
         self.e.streaming_device.ao_max_val = float(self.ui.comboBox_ao_max.currentText())
-        self.print_qt('Output voltage limit min:{}V, max:{}V'.format(self.e.streaming_device.ao_min_val,
-                                                                     self.e.streaming_device.ao_max_val))
+        self.print_qt(f'Output voltage limit min:{self.e.streaming_device.ao_min_val}V,'
+                      f' max:{self.e.streaming_device.ao_max_val}V')
 
     def on_comboBox_ai_terminal_cfg_activated(self):
         self.e.streaming_device.ai_terminal_config = self.ui.comboBox_ai_terminal_cfg.currentText()
-        self.print_qt('Ai terminal config: {}'.format(self.e.streaming_device.ai_terminal_config))
+        self.print_qt(f'Ai terminal config: {self.e.streaming_device.ai_terminal_config}')
 
     def print_qt(self, message, suppress_console=True):
         if suppress_console is False:
@@ -373,12 +371,11 @@ class TwingoExec:
             if limits is not None:  # TODO ...but it leads to code repetition which makes me wanna cry
                 num_within_limit = limit(num, limits)
                 if num_within_limit != num:
-                    raise LimitExceeded('Value {} exceeded limits: {}-{}.'.format(num, limits[0], limits[1]))
+                    raise LimitExceeded(f'Value {num} exceeded limits: {limits[0]}-{limits[1]}.')
 
         except ValueError as err:
             print(err)
-            self.print_qt('Input must be numeric {}.'.format(casting_class))
-            # TODO replace all .format statements with f strings for performance
+            self.print_qt(f'Input must be numeric {casting_class}.')
             line_edit_caller.setText(str(num_on_exc))
             return num_on_exc
 
@@ -391,7 +388,7 @@ class TwingoExec:
 
     def on_comboBox_ao_fs_activated(self):
         self.e.streaming_device.set_ao_fs(float(self.ui.comboBox_ao_fs.currentText()))
-        self.print_qt('Output sampling rate changed: {}Hz.'.format(self.e.streaming_device.ao_fs))
+        self.print_qt(f'Output sampling rate changed: {self.e.streaming_device.ao_fs}Hz.')
         # recalculate new max for coarse dial and realign all dials
         new_max_dial_rng = self.e.streaming_device.ao_fs // 2 - self.ui.dial_cm_fine_freq.maximum() - self.ui.dial_cm_vfine_freq.maximum()
         new_max_dial_rng = limit(new_max_dial_rng, (0, config.MAX_COARSE_FREQ_DIAL_LIMIT))
@@ -400,7 +397,7 @@ class TwingoExec:
 
     def on_comboBox_ai_fs_activated(self):
         self.e.streaming_device.set_ai_fs(float(self.ui.comboBox_ai_fs.currentText()))
-        self.print_qt('Input sampling rate changed: {}Hz.'.format(self.e.streaming_device.ai_fs))
+        self.print_qt(f'Input sampling rate changed: {self.e.streaming_device.ai_fs}Hz.')
 
     def on_lineEdit_min_f_editingFinished(self):
         prev_value = self.e.streaming_device.function_gen.freq0
@@ -412,7 +409,7 @@ class TwingoExec:
         if new_value == prev_value:
             return
         self.e.streaming_device.function_gen.set_start_frequency(new_value)
-        self.print_qt('Start frequency changed: {}Hz.'.format(self.e.streaming_device.function_gen.freq0))
+        self.print_qt(f'Start frequency changed: {self.e.streaming_device.function_gen.freq0}Hz.')
 
     def on_lineEdit_max_f_editingFinished(self):
         prev_value = self.e.streaming_device.function_gen.freq1
@@ -424,7 +421,7 @@ class TwingoExec:
         if new_value == prev_value:
             return
         self.e.streaming_device.function_gen.set_frequency(new_value)
-        self.print_qt('Set/End frequency changed: {}Hz.'.format(self.e.streaming_device.function_gen.freq1))
+        self.print_qt(f'Set/End frequency changed: {self.e.streaming_device.function_gen.freq1}Hz.')
         self.ui.lcdNumber.display(new_value)
         # ensure dials are in consistent position with the current set freq. and allow exploration in its vicinity
         self.align_dials_position()
@@ -458,11 +455,11 @@ class TwingoExec:
 
     def on_comboBox_ao_max_activated(self):
         self.e.streaming_device.function_gen.set_amplitude(float(self.ui.comboBox_ao_max.currentText()))
-        print('Output signal amplitude changed to {}V.'.format(self.e.streaming_device.function_gen.amplitude))
+        print(f'Output signal amplitude changed to {self.e.streaming_device.function_gen.amplitude}V.')
 
     def on_comboBox_out_sig_activated(self):
         self.e.streaming_device.function_gen.set_function(self.ui.comboBox_out_sig_type.currentText())
-        #print('Output signal function changed to {}.'.format(self.e.streaming_device.function_gen.current_function))
+        #print(f'Output signal function changed to {self.e.streaming_device.function_gen.current_function'})
 
     def on_tabWidget_main_changed(self):
         if self.ui.tabWidget_main.currentIndex() == self.FINITE_MEAS_TAB_INDEX:
@@ -507,7 +504,7 @@ class TwingoExec:
 
     def on_comboBox_dev_list_activated(self):
         device_name = self.ui.comboBox_dev_list.currentText()
-        self.print_qt('Device selected: {}'.format(device_name))
+        self.print_qt(f'Device selected: {device_name}')
         streaming_device_model = self.devices_name_to_model[device_name]
         self.e = Experiment(streaming_device_model(device_name))
         self.configure_gui()
@@ -777,8 +774,7 @@ class TwingoExec:
         ai_buffer_level = self.e.streaming_device.get_ai_buffer_level_prc()
         ao_buffer_level = self.e.streaming_device.get_ao_buffer_level_prc()
 
-        self.ui.buffer_indicator_label.setText(
-            'ai:{}/ao:{}'.format(ai_buffer_level, ao_buffer_level))
+        self.ui.buffer_indicator_label.setText(f'ai:{ai_buffer_level}/ao:{ao_buffer_level}')
 
     def update_cm_tm_plot(self):
         self.e.streaming_device.read_lock.acquire()  # TODO this probably isn't working
@@ -815,7 +811,7 @@ class TwingoExec:
             self.print_qt(err)
             return
 
-        self.print_qt('{} FFT segments average.'.format(len(fm_fft_segment_time)))
+        self.print_qt(f'{len(fm_fft_segment_time)} FFT segments average.')
 
         for chan in range(config.NR_OF_CHANNELS_TO_PLOT):
             self.fm_sp_plot_data_items[chan].setData(fm_freq_base[1:], fm_db_fft[chan][1:])
