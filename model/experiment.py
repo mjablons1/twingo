@@ -129,9 +129,8 @@ class Experiment:
             input_frame = self.fm_result_y
 
         if self.fm_sp_window_size > max(self.fm_result_y.shape):
-            raise ValueError(
-                '>> EXCEPTION << : FFT window {} pts > input frame length {} pts.'.format(self.fm_sp_window_size,
-                                                                                          max(self.fm_result_y.shape)))
+            raise ValueError(f'>> EXCEPTION << : FFT window {self.fm_sp_window_size}'
+                             f' pts > input frame length {self.fm_result_y.shape} pts.')
 
         fm_freq_base, fm_fft_segment_time, fm_fft = sig.stft(input_frame,
                                                              fs=self.streaming_device.ai_fs,
@@ -160,9 +159,8 @@ class Experiment:
     def calculate_fm_spectrogram(self):
 
         if self.fm_spg_window_size > max(self.fm_result_y.shape):
-            raise ValueError(
-                '>> EXCEPTION << : FFT window {} pts > input frame length {} pts.'.format(self.fm_sp_window_size,
-                                                                                          max(self.fm_result_y.shape)))
+            raise ValueError(f'>> EXCEPTION << : FFT window {self.fm_sp_window_size}'
+                             f' pts > input frame length {max(self.fm_result_y.shape)} pts.')
 
         f, t, spg = sig.spectrogram(np.array(self.fm_result_y[self.fm_spg_chan]),
                                     fs=self.streaming_device.ai_fs,
