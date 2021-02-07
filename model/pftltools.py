@@ -63,8 +63,7 @@ def filterfilter(input_signal, fs, f0, f1, filter_order):
     # Check if filter is stable.
     # If not, raise error preventing potentially dangerous output signal from reaching hardware.
     if not np.all(np.abs(np.roots(a)) < 1):
-        raise FilterUnstable('Filter with cutoff at {} Hz and {} Hz is unstable given'
-                                  ' sample frequency {} Hz'.format(f0, f1, fs))
+        raise FilterUnstable(f'Filter with cutoff at {f0} Hz and {f1} Hz is unstable given sample frequency {fs} Hz')
     # filter the signal according set frequency limits:
     output_signal = sig.filtfilt(b, a, input_signal, method="gust")
 
@@ -158,9 +157,9 @@ def ndarray_to_wave_bytes(in_data, out_data_format):
 def nearest_sample_rate(clock_base, sample_rate):
 
     if sample_rate < 1:
-        raise ValueError('Sample rate < 1 can not be supported by this algorithm ({} given).'.format(sample_rate))
+        raise ValueError(f'Sample rate < 1 can not be supported by this algorithm ({sample_rate} given).')
     if clock_base < sample_rate:
-        raise ValueError('Sample rate ({}Hz) can not be faster than the clock base ({}Hz).'.format(sample_rate, clock_base))
+        raise ValueError(f'Sample rate ({sample_rate}Hz) can not be faster than the clock base ({clock_base}Hz).')
 
     clock_divider = clock_base / sample_rate
     nearest_dividers = {'min': int(clock_divider),
@@ -533,8 +532,8 @@ class FunctionGenerator:
         to the signal properties.
         """
         if self.freq0 is None or self.freq1 == self.freq0:
-            raise FrequencyRangeIncorrect('ESS method requires a correct frequency range to be set. '
-                                          'freq0 is {}Hz and freq1 is {}Hz'.format(self.freq0, self.freq1))
+            raise FrequencyRangeIncorrect(f'ESS method requires a correct frequency range to be set. '
+                                          f'freq0 is {self.freq0}Hz and freq1 is {self.freq1}Hz')
 
         if not self.output_is_exp_sweep_sine:
             self.sweep_rate = np.log(self.freq1 / self.freq0)
@@ -662,13 +661,11 @@ class FunctionGenerator:
     def check_freqs(self):
         nyquist_freq = self.sample_rate/2
         if self.freq0 is not None and self.freq0 > nyquist_freq:
-            raise NyquistFrequencyExceeded('Selected frequency freq0: {}Hz exceeds'
-                                           ' the Nyquist frequency at '
-                                           '{} Hz sampling rate.'.format(self.freq0, self.sample_rate))
+            raise NyquistFrequencyExceeded(f'Selected frequency freq0: {self.freq0}Hz exceeds the Nyquist frequency'
+                                           f' at {self.sample_rate} Hz sampling rate.')
         if self.freq1 > nyquist_freq:
-            raise NyquistFrequencyExceeded('Selected frequency freq1: {}Hz exceeds'
-                                           ' the Nyquist frequency at '
-                                           '{} Hz sampling rate.'.format(self.freq1, self.sample_rate))
+            raise NyquistFrequencyExceeded(f'Selected frequency freq1: {self.freq1} Hz exceeds the Nyquist frequency'
+                                           f' at {self.sample_rate} Hz sampling rate.')
 
     def next_chunk(self):
         # This is to support non blocking write on pyAudio for finite measurement
