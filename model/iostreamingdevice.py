@@ -20,7 +20,6 @@ if nidaqmx_is_present:
 
 if pyaudio_is_present:
     import pyaudio
-
     pa = pyaudio.PyAudio()
 
 
@@ -62,7 +61,7 @@ def io_streaming_device_discovery():
         except IOError:
             print('No default audio I/O devices could be found in your system.')
 
-    # merege the two dictionaries:
+    # merge the two dictionaries:
     # device_list = [ni_devices_found, pa_devices_found]
     # devices_found = {}
     # for dict_element in device_list:
@@ -102,7 +101,6 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self._monitor_frame_counter = None
         self.monitor_lock = Lock()
 
-        # self.OUTPUT_HW_BUFFER_LEN =
         self.output_filter_enabled = False
         self.input_filter_enabled = False
         self._acq_mode = None
@@ -357,7 +355,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.AA_OUTPUT_FILTER_ORDER = 8
 
         self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_OVERWRITE_BEHAVIOUR = False
-        self.INPUT_OVERWRITE = False # For this property to take effect you must set applicable OVERRIDE to true
+        self.INPUT_OVERWRITE = False # For this property to take effect you must set applicable OVERRIDE to true.
         self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_BUFFER_SIZE = True
         # ON NI6211 the default buffer size settings seems too small. Overwrite errors at high sampling rates are
         # quite frequent.
@@ -366,7 +364,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_REGENERATION_MODE = False
         self.ALLOW_OUTPUT_REGENERATION = True
         # On NI6211 output regen is default but I leave this default to true as fail-safe for adventurous users who
-        # will swithch OVERRIDE to True
+        # will switch OVERRIDE to True.
         self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_BUFFER_SIZE = True
         # ON NI6211 the default buffer size settings seems too small. Its possible to run into buffer underflow
         # condition at high sampling rates.
@@ -413,7 +411,6 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.function_gen.set_aa_filter(wn=0.7 * self.ai_fs / self.ao_fs, order=self.AA_OUTPUT_FILTER_ORDER)
 
     def get_supported_sampling_rates(self):
-        #print('Fetching supported sampling rates list.')
         info_task = ni.Task()
         info_task.ai_channels.add_ai_voltage_chan(self.limits.ai_physical_chans[0])
         # Task must have I/O channel added before sample clock timebase rate can be queried
@@ -529,8 +526,9 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
 
         if self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_BUFFER_SIZE is True:
             try:
-                self._ao_task.out_stream.output_buf_size = self.sw_output_buffer_size  # seems like buffer is not calculating correct and we must call out explicitly on NI6211. Not setting this property leads to a chain of very confusing warnings/glitches
-                # print('Output buffer size set to {}'.format(self.sw_output_buffer_size))
+                self._ao_task.out_stream.output_buf_size = self.sw_output_buffer_size
+                # seems like buffer is not calculating correct and we must call out explicitly on NI6211.
+                # Not setting this property leads to a chain of very confusing warnings/glitches.
             except ni.errors.DaqError as exc:
                 print(exc)
 
@@ -544,6 +542,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         for frames in range(self.CM_OUTPUT_FRAMES_PER_BUFFER - 1): # TODO UGLY
             self.function_gen.generate()
             buffer_frame = np.append(buffer_frame, self.function_gen.output_frame, axis=1)
+
         self._ao_task.write(buffer_frame)
 
         self._ai_task.register_every_n_samples_acquired_into_buffer_event(self._input_frame_len,
@@ -672,7 +671,6 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
     def __init__(self, hardware_id):
         super().__init__(hardware_id)
         print('Instantiating PyAudioSoundStreamingDevice')
-        #self.READ_OFFSET_MSEC = 15
         self.input_info = pa.get_default_input_device_info()
         self.output_info = pa.get_default_output_device_info()
         #print(self.input_info)
@@ -744,7 +742,6 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    stream_callback=self.writing_callback,
                                    frames_per_buffer=self.CM_OUTPUT_FRAME_LEN)
 
-        #print('Starting continuous acq')
         self._out_stream.start_stream()
         sleep(config.pyaudio_read_offset_msec / 1000)
         self._in_stream.start_stream()
@@ -759,9 +756,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
     def reading_callback(self, in_data, frame_count, time_info, status):
         self.read_lock.acquire()
-        #self.mutex.lock()
         self.input_frame = wave_bytes_to_ndarray(in_data, self._nr_of_active_chans, np.float32)
-        #self.mutex.unlock()
         self.read_lock.release()
         self.input_frame_ready_signal.emit()
         self._put_monitor_frame()
@@ -811,7 +806,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
         self._out_stream.close()
         self._in_stream.close()
-        raw_frame_len = max(self.input_frame.shape)
+        #raw_frame_len = max(self.input_frame.shape)
         #offset = raw_frame_len - self._input_frame_len
         # print(
         #     'output signal len is {},'
@@ -859,7 +854,6 @@ if __name__ == "__main__":
     def update_time_plot():
         plot_data_item_A.setData(daq.input_time_base[0], daq.input_frame[0])
         plot_data_item_B.setData(daq.input_time_base[1], daq.input_frame[1])
-
 
     def update_monitor_plot():
         monitor_window = daq.get_monitor()
