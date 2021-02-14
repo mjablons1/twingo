@@ -1,6 +1,7 @@
 # after moving under conda environment import importlib does not make util available for some reason
 from importlib import util as importlib_util
 import numpy as np
+import copy
 from threading import Lock
 from PyQt5 import QtCore  # for signal generation
 from time import sleep
@@ -236,7 +237,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         if self._monitor_frame_counter <= self._frames_per_monitor - 1:
             self.monitor_lock.acquire()  # TODO it seems like its still not thread-safe, something's not working
             self.read_lock.acquire()
-            self._monitor_storage[self._monitor_frame_counter][:][:] = self.input_frame
+            self._monitor_storage[self._monitor_frame_counter][:][:] = copy.deepcopy(self.input_frame)
             self.read_lock.release()
             self._monitor_frame_counter += 1
             self.monitor_lock.release()
