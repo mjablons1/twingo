@@ -575,7 +575,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
 
         self.input_frame = np.zeros((self._nr_of_active_chans, self._input_frame_len),
                                     dtype=np.float64)
-        # TODO if we do not re-init the storage the following frames contain glitches between L/R and queued data is
+        # TODO if we do not re-init the storage the following frames contain glitches between L/R and monitor data is
         #  not phase continuous. I have no clue why but it seems that once written into, the array format becomes
         #  modified.
         self.read_lock.acquire()
@@ -688,20 +688,22 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         self.limits.supported_monitor_frame_lengths = self.get_supported_monitor_frame_lengths()
         self.limits.supported_input_rates, self.limits.supported_output_rates = self.get_supported_sampling_rates()
 
-        # question driver about device properties
+        # Question driver about device properties. Map only first two channels as available since for multichannel
+        # audio interfaces pyAudio will not allow you to choose which two you wish to use anyway.
 
         # map only first two channels as available since for multichannel audio interfaces pyAudio will not allow you
         # to choose which two you wish to use anyway.
+
+        # https://stackoverflow.com/questions/60057146/how-to-select-input-channels-like-mapping-in-sounddevice-with
+        # -pyaudio
+
         self.limits.ao_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
         # ['Ch:' + str(chan_index) for chan_index in range(self.output_info['maxOutputChannels'])]
-        # https://stackoverflow.com/questions/60057146/how-to-select-input-channels-like-mapping-in-sounddevice-with-pyaudio
         self.limits.ao_min_rate = min(self.limits.supported_output_rates)
         self.limits.ao_max_rate = max(self.limits.supported_output_rates)
         self.limits.ao_voltage_rngs = config.default_pyAudio_paFloat32_level_range
-        # map only first two channels as available since for multichannel audio interfaces pyAudio will not allow you
-        # to choose which two you wish to use anyway.
         self.limits.ai_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
-            #['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
+        #['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
         self.limits.ai_min_rate = min(self.limits.supported_input_rates)
         self.limits.ai_max_single_chan_rate = max(self.limits.supported_input_rates)
         self.limits.ai_max_two_chan_rate = max(self.limits.supported_input_rates)
@@ -711,6 +713,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
     def get_supported_sampling_rates(self):
         input_rates_supported = []
         output_rates_supported = []
+
         for rate in self.STANDARD_SAMPLE_RATES:
             input_rates_supported.append(pa.is_format_supported(rate, input_device=self.input_info['index'],
                                                                 input_channels=self._nr_of_active_chans,
@@ -718,6 +721,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
             output_rates_supported.append(pa.is_format_supported(rate, output_device=self.output_info['index'],
                                                                  output_channels=self._nr_of_active_chans,
                                                                  output_format=pyaudio.paFloat32))
+
         supported_input_rates = [rate for (rate, supported) in
                                  zip(self.STANDARD_SAMPLE_RATES, input_rates_supported) if supported]
         supported_output_rates = [rate for (rate, supported) in
