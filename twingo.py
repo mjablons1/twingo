@@ -119,7 +119,7 @@ class TwingoExec:
         # self.timeseries_timer.timeout.connect(self.update_cm_timeseries_plot)
 
         self.devices_name_to_model = None
-        self.exp = None
+        self.e = None
 
         MainWindow.show()
         sys.exit(app.exec_())
