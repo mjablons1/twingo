@@ -37,7 +37,7 @@ class CouldNotInitStreamingDevFcnGen(Error):
 def io_streaming_device_discovery():
     """
     Finds all supported sound devices present in the system and matches their names to the iostreamingdevice models.
-    This to makes it possible to instantiate the correct model with reference by name:
+    This to make it possible to instantiate the correct model with reference by name:
     my_daq = devices_found['Dev1']('Dev1')
     """
 
