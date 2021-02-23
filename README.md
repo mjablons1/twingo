@@ -40,8 +40,14 @@ There are two types of hardware that twingo should support right out of the box.
     
 2. Your current system default sound device input and output 
 
-    This is later added feature and still requires much improvement but it expands the usability of the tool to any input and output sound hardware currently set default in your system.
-	This way its possible to use your sound card I/O as well as external Digital/Analog converters or measure bluetooth speaker response. It should work likewise on Linux and Mac, let me know!
+    This is later added feature and still requires much improvement but it expands the usability of the tool to any input and output sound hardware *currently set default in your system*.
+	This way its possible to use for instance:
+	-   your sound card I/O,
+	-   external audio interfaces (e.g. Scarlett 2i2 or 4i4 works just fine at least on the first two I/Os),
+	-   external Digital/Analog converters,
+	-   bluetooth speakers.
+
+    It should work likewise on Linux and Mac, let me know!
 	
 	![hw_setup_NIDAQmx](docs/graphics/hw_setup_soundcard.svg)
 	
