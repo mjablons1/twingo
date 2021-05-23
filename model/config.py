@@ -12,6 +12,8 @@ default_cm_sp_window_size = default_monitor_len
 default_fm_sp_window_type = 'blackmanharris'
 default_fm_sp_window_size = 2**15
 
+default_cm_ph_window_size = 2**11
+
 default_fm_spg_chan = 0
 default_fm_spg_window_type = 'flattop'
 default_fm_spg_window_size = 2**11
