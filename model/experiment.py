@@ -19,7 +19,9 @@ class Experiment:
         self.cm_freq_base = None
         self.cm_sp_window_type = None
         self.cm_sp_window_size = None
+        self.cm_ph_window_size = None
         self.set_cm_sp_window(win_type=config.default_cm_sp_window_type, win_size=config.default_cm_sp_window_size)
+        self.set_cm_ph_window(win_size=config.default_cm_ph_window_size)
 
         # fm experiment properties:
         self.optimal_noverlap = None
@@ -41,6 +43,8 @@ class Experiment:
         self.fm_result_x = None
         self.fm_result_y = None
 
+        self.rot_matrix_45 = self.calculate_rotation_matrix(45)
+
     def set_cm_sp_window(self, win_type=None, win_size=None):
         if win_type is not None:
             self.cm_sp_window_type = win_type
@@ -48,11 +52,15 @@ class Experiment:
             if win_size < self.streaming_device.input_frame_len:
                 raise ValueError('>> EXCEPTION << Win size < input frame len.')
             self.cm_sp_window_size = win_size
-            self.streaming_device.set_monitor(self.cm_sp_window_size)
+            self.streaming_device.set_monitor(win_size)
             self.set_cm_freq_base()
 
         self._cm_win = sig.get_window(self.cm_sp_window_type, self.cm_sp_window_size)
         self._cm_db_ref = np.sum(self._cm_win) * self.streaming_device.ai_max_val
+
+    def set_cm_ph_window(self, win_size=None):
+        self.cm_ph_window_size = win_size
+        self.streaming_device.set_monitor(win_size)
 
     def set_cm_freq_base(self):
         self.cm_freq_base = np.fft.rfftfreq(self.cm_sp_window_size,
@@ -123,6 +131,24 @@ class Experiment:
         cm_db_fft = 20 * np.log10(cm_fft)
 
         return cm_db_fft
+
+    def calculate_rotation_matrix(self, angle_deg):
+        beta_rad = np.pi * angle_deg/180
+        print(f'Beta is : {beta_rad}')
+        rot_matrix = np.array([[np.cos(beta_rad), -np.sin(beta_rad)],
+                               [np.sin(beta_rad),  np.cos(beta_rad)]])
+
+        print(f'Rotation matrix: {rot_matrix}')
+
+        return rot_matrix
+
+
+    def calculate_cm_phase(self):
+        input_frame = self.streaming_device.get_monitor()
+        phase_frame = np.dot(self.rot_matrix_45, input_frame)
+        return phase_frame.T
+
+
 
     def calculate_fm_fft(self, input_frame=None):
         if input_frame is None:
