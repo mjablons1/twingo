@@ -44,6 +44,7 @@ class TwingoExec:
         self.CONTINUOUS_MEAS_TAB_INDEX = 1
         self.CM_TIMESERIES_TAB_INDEX = 0
         self.CM_SPECTRUM_TAB_INDEX = 1
+        self.CM_PHASE_TAB_INDEX = 2
 
         self.FINITE_MEAS_TAB_INDEX = 2
         self.FM_TIMESERIES_TAB_INDEX = 0
@@ -57,9 +58,13 @@ class TwingoExec:
         self.ui.tabWidget_main.setTabEnabled(self.FINITE_MEAS_TAB_INDEX, False)
         self.ui.tabWidget_main.setTabEnabled(self.CONTINUOUS_MEAS_TAB_INDEX, False)
 
+        if config.NR_OF_CHANNELS_TO_PLOT < 2:
+            self.ui.tabWidget_cm.setTabEnabled(self.CM_PHASE_TAB_INDEX, False)
+
         # plot widgets:
         self.cm_tm_plot_widget = None
         self.cm_sp_plot_widget = None
+        self.cm_ph_plot_widget = None
         self.fm_tm_plot_widget = None
         self.fm_sp_plot_widget = None
         self.fm_spg_widget = None
@@ -76,9 +81,12 @@ class TwingoExec:
 
         self.cm_tm_plot_data_items = []
         self.cm_sp_plot_data_items = []
+        self.cm_ph_plot_data_item = None
+        self.cm_ph_plot_box_data_item = []
 
         self.cm_sp_plot_hold_data_items = []
         self.cm_tm_plot_hold_data_items = []
+        self.cm_ph_plot_hold_data_items = []
 
         self.pen_case = \
             [pg.mkPen(color=chan_index + config.PLOT_COLOR_MODIFIER_INT) for chan_index in
@@ -93,6 +101,7 @@ class TwingoExec:
         self.place_fm_spg_graphics()
         self.place_cm_tm_graph()
         self.place_cm_sp_graph()
+        self.place_cm_ph_graph()
         self.connect_gui_signals()
 
         # paint the background of hold items with the same color as pen assigned to hold plots:
@@ -168,7 +177,7 @@ class TwingoExec:
         self.ui.comboBox_fm_spg_window_type.activated.connect(self.on_comboBox_fm_spg_window_type_activated)
 
         # continuous measurement widgets
-        self.ui.tabWidget_cm.currentChanged.connect(self.signal_switch)
+        self.ui.tabWidget_cm.currentChanged.connect(self.on_tabWidget_cm_changed)
         # timeseries
         self.ui.checkBox_cm_tm_hold_a.toggled.connect(self.on_checkBox_cm_tm_hold_a_toggled)
         self.ui.checkBox_cm_tm_hold_b.toggled.connect(self.on_checkBox_cm_tm_hold_b_toggled)
@@ -177,6 +186,11 @@ class TwingoExec:
         self.ui.comboBox_cm_window_size.activated.connect(self.on_comboBox_cm_window_size_activated)
         self.ui.checkBox_cm_sp_hold_a.toggled.connect(self.on_checkBox_cm_sp_hold_a_toggled)
         self.ui.checkBox_cm_sp_hold_b.toggled.connect(self.on_checkBox_cm_sp_hold_b_toggled)
+        # phase
+        self.ui.comboBox_cm_ph_window_size.activated.connect(self.on_comboBox_cm_ph_window_size_activated)
+        self.ui.checkBox_cm_ph_hold_1.toggled.connect(self.on_checkBox_cm_ph_hold_1_toggled)
+        self.ui.checkBox_cm_ph_hold_2.toggled.connect(self.on_checkBox_cm_ph_hold_2_toggled)
+
         # common
         self.ui.dial_cm_vfine_freq.valueChanged.connect(self.on_dial_value_changed)
         self.ui.dial_cm_fine_freq.valueChanged.connect(self.on_dial_value_changed)
@@ -208,7 +222,10 @@ class TwingoExec:
         self.e.set_cm_sp_window(win_type=self.ui.comboBox_cm_window_type.currentText())
 
     def on_comboBox_cm_window_size_activated(self):
-        self.e.set_cm_sp_window(win_size=int(self.ui.comboBox_cm_window_size.currentText()))
+        self.e.set_cm_sp_window(win_size=int(self.ui.comboBox_cm_window_size.currentText())) #TODO RENAME THIS METHOD TO SET_CM_WINDOW
+
+    def on_comboBox_cm_ph_window_size_activated(self):
+        self.e.set_cm_ph_window(win_size=int(self.ui.comboBox_cm_ph_window_size.currentText()))
 
     def on_comboBox_fm_spg_chan_activated(self):
         self.e.set_fm_spg_chan(self.ui.comboBox_fm_spg_chan.currentIndex())
@@ -304,7 +321,28 @@ class TwingoExec:
         except Exception as exc:
             self.print_qt(exc)
 
-    def hold_fm_tm_plot_a(self):
+
+    def on_checkBox_cm_ph_hold_1_toggled(self):
+        try:
+            if self.ui.checkBox_cm_ph_hold_1.isChecked():
+                self.cm_ph_plot_hold_data_items[0].setData(self.cm_ph_plot_data_item.xData,
+                                                           self.cm_ph_plot_data_item.yData)
+            else:
+                self.cm_ph_plot_hold_data_items[0].clear()
+        except Exception as exc:
+            self.print_qt(exc)
+
+    def on_checkBox_cm_ph_hold_2_toggled(self):
+        try:
+            if self.ui.checkBox_cm_ph_hold_2.isChecked():
+                self.cm_ph_plot_hold_data_items[1].setData(self.cm_ph_plot_data_item.xData,
+                                                           self.cm_ph_plot_data_item.yData)
+            else:
+                self.cm_ph_plot_hold_data_items[1].clear()
+        except Exception as exc:
+            self.print_qt(exc)
+
+    def hold_fm_tm_plot_a(self):  # TODO THIS SHOULD PROBABLY BE RENAMED
         try:
             if self.ui.checkBox_fm_tm_hold_a.isChecked():
                 self.fm_tm_plot_hold_data_items[0].setData(self.fm_tm_plot_data_items[0].xData,
@@ -510,12 +548,40 @@ class TwingoExec:
         self.configure_gui()
 
     def set_plot_limits(self):
-        y_min = 1.1 * self.e.streaming_device.ai_min_val
-        y_max = 1.1 * self.e.streaming_device.ai_max_val
 
-        for plot_item in [self.fm_tm_plot_widget.getPlotItem(), self.cm_tm_plot_widget.getPlotItem()]:
-            plot_item.vb.setLimits(yMin=y_min, yMax=y_max)
-            plot_item.setRange(yRange=(y_min, y_max), disableAutoRange=True)
+        x_min = self.e.streaming_device.ai_min_val
+        x_max = self.e.streaming_device.ai_max_val
+        y_min = self.e.streaming_device.ai_min_val
+        y_max = self.e.streaming_device.ai_max_val
+
+        plot_items = [self.fm_tm_plot_widget.getPlotItem(),
+                      self.cm_tm_plot_widget.getPlotItem()]
+
+        for plot_item in plot_items:
+            plot_item.vb.setLimits(yMin=y_min*1.1, yMax=y_max*1.1)
+            plot_item.setRange(yRange=(y_min*1.1, y_max*1.1), disableAutoRange=True)
+
+        phase_box_x = np.array([x_min, x_max, x_max, x_min, x_min])*config.PHASE_PLOT_OPTIMAL_WIDTH
+        phase_box_y = np.array([y_min, y_min, y_max, y_max, y_min])
+        self.cm_ph_plot_box_data_item.setData(phase_box_x, phase_box_y)
+
+        cm_ph_plot_item = self.cm_ph_plot_widget.getPlotItem()
+        cm_ph_plot_item.vb.setLimits(xMin=x_min*1.1, xMax=x_max*1.1, yMin=y_min*1.1, yMax=y_max*1.1)
+        cm_ph_plot_item.setRange(xRange=(x_min*1.1, x_max*1.1), yRange=(y_min*1.1, y_max*1.1), disableAutoRange=True)
+
+        cm_ph_text_m = pg.TextItem(text='M', anchor=(0.5, 0.5))#, color=(256, 256, 256))
+        cm_ph_text_a = pg.TextItem(text='B', anchor=(0.5, 0.5))
+        cm_ph_text_b = pg.TextItem(text='A', anchor=(0.5, 0.5))
+
+        cm_ph_text_m.setPos(0, y_max*0.9)
+        cm_ph_text_a.setPos(-x_max*0.5, y_max*0.5)
+        cm_ph_text_b.setPos(x_max*0.5, y_max*0.5)
+
+        cm_ph_plot_item.addItem(cm_ph_text_m)
+        cm_ph_plot_item.addItem(cm_ph_text_a)
+        cm_ph_plot_item.addItem(cm_ph_text_b)
+
+        #  TODO add limits for the spectral graphs and disable auto range
 
     def configure_gui(self):
         self.set_settings_page()
@@ -525,8 +591,10 @@ class TwingoExec:
         self.ui.comboBox_out_sig_type.setCurrentText(self.e.streaming_device.function_gen.current_function)
         self.ui.comboBox_sig_len.setCurrentText(str(self.e.streaming_device.finite_frame_len_sec))
 
-        self.ui.comboBox_cm_window_type.setCurrentText(self.e.cm_sp_window_type)
-        self.ui.comboBox_cm_window_size.setCurrentText(str(self.e.cm_sp_window_size))
+        self.ui.comboBox_cm_window_type.setCurrentText(self.e.cm_sp_window_type) #  TODO Rename to cm_sp
+        self.ui.comboBox_cm_window_size.setCurrentText(str(self.e.cm_sp_window_size)) #  TODO Rename to cm_sp
+
+        self.ui.comboBox_cm_ph_window_size.setCurrentText(str(self.e.cm_ph_window_size))
 
         self.ui.comboBox_fm_window_type.setCurrentText(self.e.fm_sp_window_type)
         self.ui.comboBox_fm_window_size.setCurrentText(str(self.e.fm_sp_window_size))
@@ -562,11 +630,13 @@ class TwingoExec:
         self.ui.comboBox_ao_fs.addItems([str(item) for item in self.e.streaming_device.limits.supported_output_rates])
 
     def set_comboBoxes_win_size(self):
-        self.ui.comboBox_cm_window_size.clear()
+        self.ui.comboBox_cm_window_size.clear()  # TODO RENAME to cm_sp
+        self.ui.comboBox_cm_ph_window_size.clear()
         self.ui.comboBox_fm_window_size.clear()
         self.ui.comboBox_fm_spg_window_size.clear()
         list_of_win_sizes = [str(item) for item in self.e.streaming_device.limits.supported_monitor_frame_lengths]
-        self.ui.comboBox_cm_window_size.addItems(list_of_win_sizes)
+        self.ui.comboBox_cm_window_size.addItems(list_of_win_sizes)  # TODO RENAME to cm_sp
+        self.ui.comboBox_cm_ph_window_size.addItems(list_of_win_sizes)
         self.ui.comboBox_fm_window_size.addItems(list_of_win_sizes)
         self.ui.comboBox_fm_spg_window_size.addItems(list_of_win_sizes)
 
@@ -649,7 +719,7 @@ class TwingoExec:
             self.print_qt('>>> Continuous measurement started.')
             self.ui.pushButton_stop.setEnabled(True)
             self.buffer_indicator_timer.start(config.IO_BUFFER_INDICATOR_REFRESH_MSEC)
-            self.signal_switch()
+            self.on_tabWidget_cm_changed()
         else:
             self.print_qt('Move to one of the measurement tabs to run a measurement.')
 
@@ -663,21 +733,36 @@ class TwingoExec:
         self.ui.tabWidget_main.setTabEnabled(self.FINITE_MEAS_TAB_INDEX, True)
         self.print_qt('>>> Continuous measurement stopped.')
 
-    def signal_switch(self):
-        if self.e.streaming_device.cm_measurement_is_running:
+    def on_tabWidget_cm_changed(self): # TODO rename to on_tabWidget_cm_changed
+        if self.e.streaming_device.cm_measurement_is_running:# TODO why is this needed?
+            self.disconnect_all_drawing()
             if self.ui.tabWidget_cm.currentIndex() == self.CM_TIMESERIES_TAB_INDEX:
-                try:
-                    self.e.streaming_device.monitor_ready_signal.disconnect(self.update_cm_sp_plot)
-                    self.e.streaming_device.input_frame_ready_signal.connect(self.update_cm_tm_plot)
-                except TypeError as exc:
-                    pass # In case we attempt to disconnect an already disconnected signal (can happen)
-
+                self.e.streaming_device.input_frame_ready_signal.connect(self.update_cm_tm_plot)
             elif self.ui.tabWidget_cm.currentIndex() == self.CM_SPECTRUM_TAB_INDEX:
-                try:
-                    self.e.streaming_device.input_frame_ready_signal.disconnect(self.update_cm_tm_plot)
-                    self.e.streaming_device.monitor_ready_signal.connect(self.update_cm_sp_plot)
-                except TypeError as exc:
-                    pass # In case we attempt to disconnect an already disconnected signal (can happen)
+                self.e.streaming_device.set_monitor(self.e.cm_sp_window_size)
+                self.e.streaming_device.monitor_ready_signal.connect(self.update_cm_sp_plot)
+            elif self.ui.tabWidget_cm.currentIndex() == self.CM_PHASE_TAB_INDEX:
+                self.e.streaming_device.set_monitor(self.e.cm_ph_window_size)
+                self.e.streaming_device.monitor_ready_signal.connect(self.update_cm_ph_plot)
+            else:
+                # reminder for future expansion of tabs
+                self.print_qt('WARNING: This tab does not define a specific streaming device configuration')
+
+    def disconnect_all_drawing(self): #TODO FIND A BETTER WAY TO DO THIS BY LEARNING WHICH SIGNAL IS ACTUALLY ASSIGNED TO A GIVEN SLOT
+        all_input_frame_draw_methods = [self.update_cm_tm_plot]
+        all_monitor_draw_methods = [self.update_cm_sp_plot, self.update_cm_ph_plot]
+
+        for method in all_input_frame_draw_methods:
+            try:
+                self.e.streaming_device.input_frame_ready_signal.disconnect(method)
+            except TypeError: # This is thrown when we try to disconnect a method that isn't connected
+                pass
+
+        for method in all_monitor_draw_methods:
+            try:
+                self.e.streaming_device.monitor_ready_signal.disconnect(method)
+            except TypeError:
+                pass
 
     def place_fm_tm_graph(self):
         self.fm_tm_plot_widget = pg.PlotWidget(name='Timeseries')
@@ -770,6 +855,23 @@ class TwingoExec:
             this_plot_data_item = cm_sp_plot_item.plot(pen=self.hold_pen_case[chan_index])
             self.cm_sp_plot_hold_data_items.append(this_plot_data_item)
 
+    def place_cm_ph_graph(self):
+        self.cm_ph_plot_widget = pg.PlotWidget(name='Phase Scope')
+        self.ui.cm_ph_horizontalLayout.addWidget(self.cm_ph_plot_widget)
+        cm_ph_plot_item = self.cm_ph_plot_widget.getPlotItem()
+        cm_ph_plot_item.showGrid(True, True, alpha=1)
+        #cm_ph_plot_item.setLabel('left', 'Lvl', units='<b>V</b>')
+
+        self.cm_ph_plot_data_item = cm_ph_plot_item.plot(pen=config.PHASE_PLOT_COLOR_MODIFIER)
+        plot_hold_data_item1 = cm_ph_plot_item.plot(pen=config.PHASE_PLOT_HOLD_COLOR_MODIFIER)
+        self.cm_ph_plot_hold_data_items.append(plot_hold_data_item1)
+        plot_hold_data_item2 = cm_ph_plot_item.plot(pen=config.PHASE_PLOT_HOLD_COLOR_MODIFIER+1)
+        self.cm_ph_plot_hold_data_items.append(plot_hold_data_item2)
+        self.cm_ph_plot_box_data_item = cm_ph_plot_item.plot(pen=config.PHASE_PLOT_LIMIT_COLOR_MODIFIER)
+
+        #TODO GENERATE THE ROTATION MATRIX FOR 45*
+
+
     def update_output_buffer_indicator(self):
         ai_buffer_level = self.e.streaming_device.get_ai_buffer_level_prc()
         ao_buffer_level = self.e.streaming_device.get_ao_buffer_level_prc()
@@ -789,6 +891,10 @@ class TwingoExec:
         for chan in range(config.NR_OF_CHANNELS_TO_PLOT):
             # plot except for DC component to prevent warning with X logscale
             self.cm_sp_plot_data_items[chan].setData(self.e.cm_freq_base[1:], self.e.calculate_cm_fft()[chan][1:])
+
+    def update_cm_ph_plot(self):
+        phase_frame = self.e.calculate_cm_phase()
+        self.cm_ph_plot_data_item.setData(phase_frame)
 
     def update_fm_tm_plot(self):
         self.check_fm_data_present()
