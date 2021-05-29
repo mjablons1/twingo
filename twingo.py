@@ -436,6 +436,7 @@ class TwingoExec:
     def on_comboBox_ai_fs_activated(self):
         self.e.streaming_device.set_ai_fs(float(self.ui.comboBox_ai_fs.currentText()))
         self.print_qt(f'Input sampling rate changed: {self.e.streaming_device.ai_fs}Hz.')
+        self.e.set_cm_freq_base()
 
     def on_lineEdit_min_f_editingFinished(self):
         prev_value = self.e.streaming_device.function_gen.freq0
@@ -841,9 +842,7 @@ class TwingoExec:
         self.cm_sp_plot_widget = pg.PlotWidget(name='Continuous Spectral Analysis')
         self.ui.cm_sp_verticalLayout.addWidget(self.cm_sp_plot_widget)
         cm_sp_plot_item = self.cm_sp_plot_widget.getPlotItem()
-        cm_sp_plot_item.vb.setLimits(yMin=config.CM_SP_GRAPH_MIN_dB_LIMIT, yMax=config.CM_SP_GRAPH_MAX_dB_LIMIT)
-        cm_sp_plot_item.setRange(yRange=(config.CM_SP_GRAPH_MIN_dB_LIMIT, config.CM_SP_GRAPH_MAX_dB_LIMIT),
-                                 disableAutoRange=True)
+
         # cm_sp_plot_item.disableAutoRange()
         cm_sp_plot_item.setLogMode(True, False)
         cm_sp_plot_item.showGrid(True, True, alpha=1)
@@ -854,6 +853,18 @@ class TwingoExec:
             self.cm_sp_plot_data_items.append(this_plot_data_item)
             this_plot_data_item = cm_sp_plot_item.plot(pen=self.hold_pen_case[chan_index])
             self.cm_sp_plot_hold_data_items.append(this_plot_data_item)
+
+        x_min = np.log10(config.MIN_OUTPUT_FREQUENCY_ALLOWED)
+        x_max = np.log10(config.MAX_COARSE_FREQ_DIAL_LIMIT)
+
+        cm_sp_plot_item.vb.setLimits(xMin=x_min,
+                                     xMax=x_max,
+                                     yMin=config.CM_SP_GRAPH_MIN_dB_LIMIT,
+                                     yMax=config.CM_SP_GRAPH_MAX_dB_LIMIT)
+
+        cm_sp_plot_item.setRange(xRange=(x_min, x_max),
+                                 yRange=(config.CM_SP_GRAPH_MIN_dB_LIMIT, config.CM_SP_GRAPH_MAX_dB_LIMIT),
+                                 disableAutoRange=True)
 
     def place_cm_ph_graph(self):
         self.cm_ph_plot_widget = pg.PlotWidget(name='Phase Scope')
