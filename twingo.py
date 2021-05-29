@@ -856,14 +856,14 @@ class TwingoExec:
 
         x_min = np.log10(config.MIN_OUTPUT_FREQUENCY_ALLOWED)
         x_max = np.log10(config.MAX_COARSE_FREQ_DIAL_LIMIT)
+        y_min = config.CM_SP_GRAPH_MIN_dB_LIMIT
+        y_max = config.CM_SP_GRAPH_MAX_dB_LIMIT
 
-        cm_sp_plot_item.vb.setLimits(xMin=x_min,
-                                     xMax=x_max,
-                                     yMin=config.CM_SP_GRAPH_MIN_dB_LIMIT,
-                                     yMax=config.CM_SP_GRAPH_MAX_dB_LIMIT)
+        cm_sp_plot_item.vb.setLimits(xMin=x_min, xMax=x_max,
+                                     yMin=y_min, yMax=y_max)
 
         cm_sp_plot_item.setRange(xRange=(x_min, x_max),
-                                 yRange=(config.CM_SP_GRAPH_MIN_dB_LIMIT, config.CM_SP_GRAPH_MAX_dB_LIMIT),
+                                 yRange=(y_min, y_max),
                                  disableAutoRange=True)
 
     def place_cm_ph_graph(self):
