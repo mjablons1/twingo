@@ -134,11 +134,8 @@ class Experiment:
 
     def calculate_rotation_matrix(self, angle_deg):
         beta_rad = np.pi * angle_deg/180
-        print(f'Beta is : {beta_rad}')
         rot_matrix = np.array([[np.cos(beta_rad), -np.sin(beta_rad)],
                                [np.sin(beta_rad),  np.cos(beta_rad)]])
-
-        print(f'Rotation matrix: {rot_matrix}')
 
         return rot_matrix
 
@@ -146,7 +143,7 @@ class Experiment:
         input_frame = self.streaming_device.get_monitor()
         phase_frame = np.dot(self.rot_matrix_45, input_frame)
         return phase_frame.T
-    
+
     def calculate_fm_fft(self, input_frame=None):
         if input_frame is None:
             input_frame = self.fm_result_y
