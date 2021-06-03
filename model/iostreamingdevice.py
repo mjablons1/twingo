@@ -299,6 +299,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
                                      'required.\n')
 
         #print('Input_frame_len changed to: {}'.format(self._input_frame_len))
+        #print('Input time_base length change to.{}'.format(np.max(np.size(self.input_time_base))))
 
     def set_mode_to_continuous(self):
         #print('iostreamingdevice: switching to continuous mode')
@@ -748,7 +749,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    frames_per_buffer=self.CM_OUTPUT_FRAME_LEN)
 
         self._out_stream.start_stream()
-        sleep(config.pyaudio_read_offset_msec / 1000)
+        #sleep(self._out_stream.get_output_latency())
+        sleep(config.pyaudio_read_offset_msec / 1000) # TODO this isnt really working as intended. Consider removing.
         self._in_stream.start_stream()
         self.cm_measurement_is_running = True
 
@@ -801,27 +803,18 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    stream_callback=self.finite_writing_callback,
                                    frames_per_buffer=self.function_gen.chunk_len)
 
-        latency_offset = self._out_stream.get_output_latency() + self._in_stream.get_input_latency()
+        #latency_offset = self._out_stream.get_output_latency() + self._in_stream.get_input_latency()
 
         self._out_stream.start_stream()
-        sleep(config.pyaudio_read_offset_msec / 1000)
+        sleep(self._out_stream.get_output_latency())
         self._in_stream.start_stream()
 
-        sleep(self.finite_frame_len_sec + latency_offset)
+        while np.size(self.input_frame, 1) < self._input_frame_len:
+            sleep(0.05)
 
         self._out_stream.close()
         self._in_stream.close()
-        #raw_frame_len = max(self.input_frame.shape)
-        #offset = raw_frame_len - self._input_frame_len
-        # print(
-        #     'output signal len is {},'
-        #     ' raw bytes data len is{},'
-        #     ' frame_len is {},'
-        #     ' complete input frame len{},'
-        #     ' offset is {}'.format(
-        #         max(self.function_gen.output_frame.shape),
-        #         self._output_frame_len, self._input_frame_len,
-        #         max(self.input_frame.shape), offset))
+
         self.input_frame = self.input_frame[:self._nr_of_active_chans, -self._input_frame_len:]
 
     def finite_reading_callback(self, in_data, frame_count, time_info, status):
