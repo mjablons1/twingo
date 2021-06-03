@@ -104,7 +104,7 @@ class Experiment:
             self.streaming_device.set_mode_to_finite(self.streaming_device.finite_frame_len_sec)
 
         self.streaming_device.io_start()
-        self.fm_result_x = self.streaming_device.input_time_base[0]
+        self.fm_result_x = self.streaming_device.input_time_base[0] #TODO so what was the point of making this into a 2xN matrix
         self.fm_result_y = self.streaming_device.input_frame
 
     def start_fm_ess_experiment(self):
