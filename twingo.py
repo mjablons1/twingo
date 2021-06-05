@@ -571,8 +571,8 @@ class TwingoExec:
         cm_ph_plot_item.setRange(xRange=(x_min*1.1, x_max*1.1), yRange=(y_min*1.1, y_max*1.1), disableAutoRange=True)
 
         cm_ph_text_m = pg.TextItem(text='M', anchor=(0.5, 0.5))#, color=(256, 256, 256))
-        cm_ph_text_a = pg.TextItem(text='B', anchor=(0.5, 0.5))
-        cm_ph_text_b = pg.TextItem(text='A', anchor=(0.5, 0.5))
+        cm_ph_text_a = pg.TextItem(text='A', anchor=(0.5, 0.5))
+        cm_ph_text_b = pg.TextItem(text='B', anchor=(0.5, 0.5))
 
         cm_ph_text_m.setPos(0, y_max*0.9)
         cm_ph_text_a.setPos(-x_max*0.5, y_max*0.5)
