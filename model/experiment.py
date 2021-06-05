@@ -141,7 +141,7 @@ class Experiment:
 
     def calculate_cm_phase(self):
         input_frame = self.streaming_device.get_monitor()
-        phase_frame = np.dot(self.rot_matrix_45, input_frame)
+        phase_frame = np.dot(self.rot_matrix_45, np.flipud(input_frame))
         return phase_frame.T
 
     def calculate_fm_fft(self, input_frame=None):
