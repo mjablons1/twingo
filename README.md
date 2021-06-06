@@ -43,7 +43,10 @@ There are two types of hardware that twingo should support right out of the box.
     This is later added feature and still requires much improvement but it expands the usability of the tool to any input and output sound hardware *currently set default in your system*.
 	This way its possible to use for instance:
 	-   your sound card I/O,
-	-   external audio interfaces (e.g. Scarlett 2i2 or 4i4 works just fine at least on the first two I/Os),
+	-   external audio interfaces 
+	    - Focusrite Scarlett series, e.g. 2i2 or 4i4,
+	    - Steinberg UR series,
+	    - NOTE: only first two I/O's will be functional and you may have to adjust pyaudio_read_offset_msec under model/config in order to synchronize the input and output.
 	-   external Digital/Analog converters,
 	-   bluetooth speakers.
 
@@ -62,6 +65,10 @@ There are two types of hardware that twingo should support right out of the box.
 
     ![example_spectrogram](docs/graphics/example_spectrogram.PNG)
     
+4. Phase scope to test phase matching between speaker or microphone pairs, or setup stereo image width for instrument recordings.
+    
+    ![example_phasescope](docs/graphics/example_phase_scope.PNG)
+    
 # Note
 This project is my first real OOP application after several years spent just on scientific scripting once in a while, therefore i expect that a lot of my code can be improved with your support and feedback. Thanks!
 
@@ -73,3 +80,4 @@ The ESS measurement method is still experimental and you should not trust the re
  - [https://www.schlameel.com](https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/) & [schlameel/interleave.py](https://gist.github.com/schlameel/2ee338c35c72bedcdda58dcb121f2786)
  - [Exponential Sine Sweep article from Will Fehlhaber](https://theaudioprogrammer.com/signal-analysis-ii-linear-vs-logarithmic-sine-sweep/)
  - [Qt Dark Theme by Michael Herrmann](https://github.com/pyqt/examples/tree/_/src/09%20Qt%20dark%20theme)
+ - Classical Recording - A Practical Guide in the Decca Tradition, C.Haigh et.al.
