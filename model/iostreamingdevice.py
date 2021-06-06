@@ -2,7 +2,7 @@
 from importlib import util as importlib_util
 import numpy as np
 import copy
-from threading import Lock
+from threading import Lock, Event
 from PyQt5 import QtCore  # for signal generation
 from time import sleep
 
@@ -805,17 +805,23 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
         #latency_offset = self._out_stream.get_output_latency() + self._in_stream.get_input_latency()
 
+        output_latency = self._out_stream.get_output_latency()
+        input_latency = self._in_stream.get_input_latency()
+
+        just = Event()
+
         self._out_stream.start_stream()
-        sleep(self._out_stream.get_output_latency())
+        just.wait(timeout=output_latency+input_latency+config.pyaudio_read_offset_msec/1000)
         self._in_stream.start_stream()
 
         while np.size(self.input_frame, 1) < self._input_frame_len:
-            sleep(0.05)
+            just.wait(timeout=input_latency)
 
         self._out_stream.close()
         self._in_stream.close()
 
-        self.input_frame = self.input_frame[:self._nr_of_active_chans, -self._input_frame_len:]
+        self.input_frame = self.input_frame[:self._nr_of_active_chans, :self._input_frame_len]
+        #self.input_frame = self.input_frame[:self._nr_of_active_chans, -self._input_frame_len:]
 
     def finite_reading_callback(self, in_data, frame_count, time_info, status):
         # we need reading by callback else simultaneous, blocking out and in stream would block each other
