@@ -138,7 +138,7 @@ def optimal_noverlap(win_name,win_len):
 def wave_bytes_to_ndarray(interleaved_in_data, nr_of_channels, in_data_format):
     """ interleaved_in_data - bytes"""
     interleaved_ndarray = np.frombuffer(interleaved_in_data, in_data_format)
-    deinterleaved_chans_tuple = tuple([interleaved_ndarray[i::nr_of_channels] for i in range(nr_of_channels)])
+    deinterleaved_chans_tuple = tuple([interleaved_ndarray[n::nr_of_channels] for n in range(nr_of_channels)])
     deinterleaved_out_data = np.stack(deinterleaved_chans_tuple)
     #thanks to https://stackoverflow.com/questions/5347065/interweaving-two-numpy-arrays
     return deinterleaved_out_data
