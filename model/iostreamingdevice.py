@@ -681,6 +681,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         #TODO consider renaming to _stream_reader and placing property already in the base class
         self._in_stream = None
         self._out_stream = None
+        self._finite_read_sub_frame_count = None
+        self.FM_INPUT_FRAME_LEN = 1024
 
         self._set_limits()
         self.set_default_config()
@@ -785,7 +787,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         return out_data, status
 
     def start_finite_acq_n_gen(self):
-        self.input_frame = np.array([[]]*self._nr_of_active_chans)
+        self.input_frame = np.zeros((self._nr_of_active_chans, int(self._input_frame_len*1.5)), dtype=np.float64)  # TODO magic
+        self._finite_read_sub_frame_count = 0
         self.function_gen.reset_phase()
         self.function_gen.generate()
 
@@ -794,7 +797,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                   rate=int(self.ai_fs),
                                   input=True,
                                   stream_callback=self.finite_reading_callback,
-                                  frames_per_buffer=self.CM_INPUT_FRAME_LEN)
+                                  frames_per_buffer=self.FM_INPUT_FRAME_LEN)
 
         self._out_stream = pa.open(start=False, format=pyaudio.paFloat32,
                                    channels=self._nr_of_active_chans,
@@ -803,42 +806,45 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    stream_callback=self.finite_writing_callback,
                                    frames_per_buffer=self.function_gen.chunk_len)
 
-        #latency_offset = self._out_stream.get_output_latency() + self._in_stream.get_input_latency()
-
-        output_latency = self._out_stream.get_output_latency()
-        input_latency = self._in_stream.get_input_latency()
-
         just = Event()
+        read_delay = self._out_stream.get_output_latency() + config.pyaudio_read_offset_msec / 1000
 
         self._out_stream.start_stream()
-        just.wait(timeout=output_latency+input_latency+config.pyaudio_read_offset_msec/1000)
+        just.wait(timeout=read_delay)
         self._in_stream.start_stream()
 
-        while np.size(self.input_frame, 1) < self._input_frame_len:
-            just.wait(timeout=input_latency)
+        while self._out_stream.is_active():
+            just.wait(timeout=0.1)
 
-        self._out_stream.close()
+        just.wait(timeout=read_delay)
+
+        self._in_stream.stop_stream()
         self._in_stream.close()
+        self._out_stream.stop_stream()
+        self._out_stream.close()
 
         self.input_frame = self.input_frame[:self._nr_of_active_chans, :self._input_frame_len]
-        #self.input_frame = self.input_frame[:self._nr_of_active_chans, -self._input_frame_len:]
 
     def finite_reading_callback(self, in_data, frame_count, time_info, status):
         # we need reading by callback else simultaneous, blocking out and in stream would block each other
-        this_frame = wave_bytes_to_ndarray(in_data, self._nr_of_active_chans, np.float32)
-        self.input_frame = np.append(self.input_frame, this_frame, axis=1)  # we use this callback in combination with
-        # sleep (blocking mode) therefore its acceptable to use append as we truly do not know the size of the output
-        # we will end up with.
-        return None, status
+        sub_frame = wave_bytes_to_ndarray(in_data, self._nr_of_active_chans, np.float32)
+
+        pos_start = self._finite_read_sub_frame_count * self.FM_INPUT_FRAME_LEN
+        pos_end = pos_start + self.FM_INPUT_FRAME_LEN
+
+        self.input_frame[:, pos_start:pos_end] = sub_frame
+        self._finite_read_sub_frame_count += 1
+
+        return None, pyaudio.paContinue
 
     def finite_writing_callback(self, in_data, frame_count, time_info, status):
         chunk, complete = self.function_gen.next_chunk()
         chunk_bytes = ndarray_to_wave_bytes(chunk, np.float32)
 
         if complete:
-            status = pyaudio.paComplete
+           status = pyaudio.paComplete
         else:
-            status = pyaudio.paContinue
+           status = pyaudio.paContinue
         return chunk_bytes, status  # the first returned data will be written into the output buffer
 
     def get_ao_buffer_level_prc(self):

@@ -22,5 +22,4 @@ spg_window_overlap_skip_pts = 128
 
 default_pyAudio_paFloat32_level_range = [1.0, -1.0]
 
-pyaudio_read_offset_msec = 15  # Allows to manually adjust the input and output start synchronization for pyAudio dev.
-#pyaudio_read_offset_msec = 175  # I found this value to produce the best I/O sync for 192kHz sampling on Steinberg UR44C.
+pyaudio_read_offset_msec = 35  # Allows to manually adjust the input and output start synchronization for pyAudio dev.
