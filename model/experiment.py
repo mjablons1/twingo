@@ -45,7 +45,7 @@ class Experiment:
 
         self.rot_matrix_45 = self.calculate_rotation_matrix(45)
 
-    def set_cm_sp_window(self, win_type=None, win_size=None):
+    def set_cm_sp_window(self, win_type = None, win_size=None):
         if win_type is not None:
             self.cm_sp_window_type = win_type
         if win_size is not None:

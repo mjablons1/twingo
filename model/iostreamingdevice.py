@@ -752,7 +752,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
 
         self._out_stream.start_stream()
         #sleep(self._out_stream.get_output_latency())
-        sleep(config.pyaudio_read_offset_msec / 1000) # TODO this isnt really working as intended. Consider removing.
+        sleep(config.pyaudio_read_offset_msec / 1000) # TODO align this to the finite method
         self._in_stream.start_stream()
         self.cm_measurement_is_running = True
 

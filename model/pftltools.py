@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import signal as sig
 from threading import Thread, Event, Timer, Lock
-from time import time as now
+from time import perf_counter as now
 
 class Error(Exception):
     """Base class for other exceptions"""
