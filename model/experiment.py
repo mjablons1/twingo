@@ -45,7 +45,7 @@ class Experiment:
 
         self.rot_matrix_45 = self.calculate_rotation_matrix(45)
 
-    def set_cm_sp_window(self, win_type = None, win_size=None):
+    def set_cm_sp_window(self, win_type=None, win_size=None):
         if win_type is not None:
             self.cm_sp_window_type = win_type
         if win_size is not None:
@@ -104,7 +104,8 @@ class Experiment:
             self.streaming_device.set_mode_to_finite(self.streaming_device.finite_frame_len_sec)
 
         self.streaming_device.io_start()
-        self.fm_result_x = self.streaming_device.input_time_base[0] #TODO so what was the point of making this into a 2xN matrix
+        # TODO so what was the point of making this into a 2xN matrix
+        self.fm_result_x = self.streaming_device.input_time_base[0]
         self.fm_result_y = self.streaming_device.input_frame
 
     def start_fm_ess_experiment(self):
@@ -132,7 +133,7 @@ class Experiment:
 
         return cm_db_fft
 
-    def calculate_rotation_matrix(self, angle_deg):
+    def calculate_rotation_matrix(self, angle_deg):  # TODO move to pftltools
         beta_rad = np.pi * angle_deg/180
         rot_matrix = np.array([[np.cos(beta_rad), -np.sin(beta_rad)],
                                [np.sin(beta_rad),  np.cos(beta_rad)]])
@@ -170,7 +171,9 @@ class Experiment:
                                                mode='same',
                                                axes=1)
         ess_impulse_response = rescale(ess_impulse_response,
-                                       self.streaming_device.ai_max_val)  # TODO On this line relative scaling between measurements is different. We should be rescaling by some calculated constant, not to HW limit)
+                                       self.streaming_device.ai_max_val)
+        # TODO On this line relative scaling between measurements is different. We should be rescaling by some
+        #  calculated constant, not to HW limit.
         delta_f = self.streaming_device.function_gen.freq1 - self.streaming_device.function_gen.freq0
         db_ref = np.sqrt(self.streaming_device.finite_frame_len_sec / (2 * delta_f))  # TODO this is not exact
         ess_impulse_response /= db_ref
@@ -184,8 +187,11 @@ class Experiment:
 
         f, t, spg = sig.spectrogram(np.array(self.fm_result_y[self.fm_spg_chan]),
                                     fs=self.streaming_device.ai_fs,
-                                    window=self.fm_spg_window_type, nperseg=self.fm_spg_window_size,
-                                    noverlap=self.fm_spg_window_size-config.spg_window_overlap_skip_pts, scaling='spectrum', mode='magnitude',  #128
+                                    window=self.fm_spg_window_type,
+                                    nperseg=self.fm_spg_window_size,
+                                    noverlap=self.fm_spg_window_size-config.spg_window_overlap_skip_pts,
+                                    scaling='spectrum',
+                                    mode='magnitude',
                                     detrend=False)
 
         return f, t, spg
