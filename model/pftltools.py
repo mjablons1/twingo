@@ -3,6 +3,7 @@ from scipy import signal as sig
 from threading import Thread, Event, Timer, Lock
 from time import perf_counter as now
 
+
 class Error(Exception):
     """Base class for other exceptions"""
     pass
@@ -23,21 +24,6 @@ class FrequencyRangeIncorrect(Error):
     pass
 
 
-#class ClipWarning(Error):
-#    """Exception raised if data in list or array had to be clipped to prevent exceeding the limits"""
-#    pass
-
-# def check_str_input_contains_positive_float(func):
-#     def func_wrapper(input_text):
-#         try:
-#             number = float(input_text)
-#         except TypeError as exc:
-#             print(exc)
-#         if number <= 0:
-#             raise NumberIsNotPositive
-#         return func(input_text)
-#     return func_wrapper
-
 class Timeit:
     def __init__(self):
         self.start_time = None
@@ -49,16 +35,17 @@ class Timeit:
         delta_seconds = now() - self.start_time
         print(f'Clause finished in {delta_seconds}s.')
 
+
 def filterfilter(input_signal, fs, f0, f1, filter_order):
-    '''
+    """
     Does forward and backward filtering using Butterworth bandpass filter of specified order from f0 to f1.
     fs must represent the input signal sampling rate. Because the filtering is done forward and backward the resulting
     order is twice that the input specified.
-    '''
-    LO_cutoff_norm = f0 / (fs / 2)
-    HI_cutoff_norm = f1 / (fs / 2)
+    """
+    lo_cutoff_norm = f0 / (fs / 2)
+    hi_cutoff_norm = f1 / (fs / 2)
     # create filter for audible frequencies:
-    b, a = sig.butter(filter_order, [LO_cutoff_norm, HI_cutoff_norm], 'bandpass', analog=False, output='ba')
+    b, a = sig.butter(filter_order, [lo_cutoff_norm, hi_cutoff_norm], btype='bandpass', analog=False, output='ba')
 
     # Check if filter is stable.
     # If not, raise error preventing potentially dangerous output signal from reaching hardware.
@@ -83,9 +70,11 @@ def rescale(sig_array, amp):
 
 def limit(value, limits):
     """
+    :param <iterable> limits: iterable of len = 2 containing min and max limit values
     :param <float> value: value to limit
     :param <list>/<tuple> limits: (min, max) limits to which restrict the value
-    :return <float>: value from within limits, if input value readily fits into the limits its left unchanged. If value exceeds limit on either boundary its set to that boundary.
+    :return <float>: value from within limits, if input value readily fits into the limits its left unchanged. If
+    value exceeds limit on either boundary its set to that boundary.
     """
     if value < limits[0]:
         value = limits[0]
@@ -96,11 +85,11 @@ def limit(value, limits):
     return value
 
 
-def clip_list(values, limits):  #TODO this is unnecessary because numpy already implements clip that is high performance
+def clip_list(values, limits):  # TODO this is unnecessary because numpy already implements clip that is high perf.
 
     checksum = sum([abs(value) for value in values])
-    for i in range(len(values)):
-        values[i] = limit(values[i], limits)
+    for itr in range(len(values)):
+        values[itr] = limit(values[itr], limits)
 
     if sum([abs(value) for value in values]) != checksum:
         clipping_occurred = True
@@ -108,10 +97,9 @@ def clip_list(values, limits):  #TODO this is unnecessary because numpy already 
         clipping_occurred = False
 
     return clipping_occurred
-    #raise ClipWarning('Warning: Some values were clipped to the limits.')
 
 
-def optimal_noverlap(win_name,win_len):
+def optimal_noverlap(win_name, win_len):
     """
     This function is intended to support scipy.signal.stft calls with noverlap parameter.
     :param win_name: (str) name of the window (has to follow scipy.signal.windows naming)
@@ -129,7 +117,8 @@ def optimal_noverlap(win_name,win_len):
         noverlap = int(win_len*window_to_overlap_coef[win_name])
     except KeyError as exc:
         print(exc)
-        print('The window you have selected is not recognized or does not have optimal overlap. Setting window overlap to default 75%.')
+        print('The window you have selected is not recognized or does not have optimal overlap. Setting window '
+              'overlap to default 75%.')
         noverlap = int(win_len*0.75)
 
     return noverlap
@@ -140,7 +129,7 @@ def wave_bytes_to_ndarray(interleaved_in_data, nr_of_channels, in_data_format):
     interleaved_ndarray = np.frombuffer(interleaved_in_data, in_data_format)
     deinterleaved_chans_tuple = tuple([interleaved_ndarray[n::nr_of_channels] for n in range(nr_of_channels)])
     deinterleaved_out_data = np.stack(deinterleaved_chans_tuple)
-    #thanks to https://stackoverflow.com/questions/5347065/interweaving-two-numpy-arrays
+    # thanks to https://stackoverflow.com/questions/5347065/interweaving-two-numpy-arrays
     return deinterleaved_out_data
 
 
@@ -148,8 +137,8 @@ def ndarray_to_wave_bytes(in_data, out_data_format):
     """ in_data - ndarray with dimensions (nr_of_channels, len_chan_data)"""
     nr_of_channels = in_data.shape[0]
     chans_tuple = tuple([in_data[i] for i in range(nr_of_channels)])
-    interleaved_ndarray = np.vstack(chans_tuple).reshape((-1,), order='F') # not sure why order F has to be used
-    #thanks to https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/
+    interleaved_ndarray = np.vstack(chans_tuple).reshape((-1,), order='F')  # not sure why order F has to be used
+    # thanks to https://www.schlameel.com/2017/06/09/interleaving-and-de-interleaving-data-with-python/
     interleaved_out_data = interleaved_ndarray.astype(out_data_format).tobytes()
     return interleaved_out_data
 
@@ -191,6 +180,7 @@ def nearest_supported_sample_rates(clock_base, sample_rates, duplicates=True):
     else:
         return nearest_sample_rates
 
+
 class SampleTimer(Thread):
     """ A timer thread that attempts to execute the callback function every fixed time interval with maximum accuracy.
     Example applications: data plotting refresh, measurement sequence trigger etc.
@@ -218,7 +208,7 @@ class SampleTimer(Thread):
         self.stop_event = Event()
         self.rate = rate
         self.callback_function = callback_function
-        self.callback_args = args  # if done this way arguments will be passed by value instead by reference even on mutable types
+        self.callback_args = args
         self.start_time = None
         self.actual_trig_times = []  # writing to this property is suppressed by default to prevent memory leak
         self.actual_completion_times = []
@@ -264,7 +254,7 @@ class SampleTimer(Thread):
             # However as soon as stop_event.set()is issued the stop_event.wait() will immediately return TRUE
             # causing the while loop to exit.
             # self.actual_trig_times.append(self.elapsed_time())  # only uncomment for debugging
-            self.callback_function(*self.callback_args)  # its ok to handle without checking args, if not present argument is = None
+            self.callback_function(*self.callback_args)  # its ok to handle without checking args, if not present - None
             # self.actual_completion_times.append(self.elapsed_time())  # only uncomment for debugging
             self.iterations += 1
 
@@ -324,7 +314,7 @@ class ListTimer(Thread):
         self.iteration = 0
         self.trig_times = trig_times
         self.callback_function = callback_function
-        self.callback_args = args  # if done this way arguments will be passed by value instead by reference even on mutable types
+        self.callback_args = args  # arguments will be passed by value instead by reference even on mutable types
         self.actual_trig_times = []
         self.actual_completion_times = []
         self.start_time = None
@@ -387,7 +377,14 @@ class FunctionGenerator:
     [shape equal (frame_len,)], in case of default, shingle channel operation, user must run np.squeeze(output_frame).
     For repeatable, single shot operation user should run reset_phase() after every generate().
     """
-    def __init__(self, output_frame_len=1024, sample_rate=44100, freq1=441, freq0=None, amplitude=1, nr_of_chan=1, function_type='sine'):
+    def __init__(self,
+                 output_frame_len=1024,
+                 sample_rate=44100,
+                 freq1=441,
+                 freq0=None,
+                 amplitude=1,
+                 nr_of_chan=1,
+                 function_type='sine'):
         """
         :param <int> output_frame_len: length of the output frame in samples
         :param <int> sample_rate: sampling rate of the signals
@@ -431,7 +428,6 @@ class FunctionGenerator:
         self.pa_chunk_start = 0
         self.pa_frame_complete = False
 
-
     def __set_timebase(self):
         """
         Updates <ndarray> of time base values in seconds spanning the length of the frame in steps according to sample
@@ -467,9 +463,10 @@ class FunctionGenerator:
         self.__frame_len_sec = self._output_frame_len / self.sample_rate
 
     def __set_filter_coefs(self):
-        #implemet just a nyquist freqyency filter
-        self.filter_coefs = sig.bessel(self.AA_FILTER_ORDER, self.AA_FILTER_NYQUIST_COEF, btype='lowpass', analog=False, output='ba')
-        #bessel filter is used to have minimum ringing and risk of overshooting the analog output range of the hardware
+        # implemet just a nyquist freqyency filter
+        self.filter_coefs = sig.bessel(self.AA_FILTER_ORDER, self.AA_FILTER_NYQUIST_COEF, btype='lowpass',
+                                       analog=False, output='ba')
+        # bessel filter is used to have minimum ringing and risk of overshooting the analog output range of the hardware
         pass
 
     def __reset_filter_initial_condition(self):
@@ -485,7 +482,7 @@ class FunctionGenerator:
         """
         NOTE: all generate_ methods should be as concise and performing as possible
         """
-        self.output_frame = np.zeros((self.nr_of_chan,self._output_frame_len))
+        self.output_frame = np.zeros((self.nr_of_chan, self._output_frame_len))
 
     def generate_sine_output_frame(self):
         """
@@ -551,7 +548,8 @@ class FunctionGenerator:
 
     def set_aa_filter(self, wn=None, order=None):
         """
-        :param <float> wn: coefficient determining the cutoff of the AA pre-equalization filter. Set to 1 equals fs/2 cutoff.
+        :param <float> wn: coefficient determining the cutoff of the AA pre-equalization filter. Set to 1 equals fs/2
+        cutoff.
         :param <int> order: defines filter order
         """
         if wn is not None:
@@ -568,7 +566,6 @@ class FunctionGenerator:
         """
         with self.property_lock:
             self.amplitude = amplitude
-            #self.output_is_exp_sweep_sine = False
 
     def set_frequency(self, frequency):
         """
@@ -578,8 +575,7 @@ class FunctionGenerator:
             self.freq1 = frequency
             self.__set_angles_rad()
             self.__set_phase_reminder()
-            self.check_freqs() # TODO Eh? why is this last?
-            #self.output_is_exp_sweep_sine = False # TODO code repetition
+            self.check_freqs()  # TODO Eh? why is this last?
 
     def set_start_frequency(self, frequency):
         """
@@ -590,7 +586,6 @@ class FunctionGenerator:
             self.__set_angles_rad()
             self.__set_phase_reminder()
             self.check_freqs()
-            #self.output_is_exp_sweep_sine = False # TODO code repetition
 
     def set_sample_rate(self, sample_rate):
         """
@@ -615,7 +610,7 @@ class FunctionGenerator:
             self.__set_angles_rad()  # TODO code repetition
             self.__set_phase_reminder()  # TODO code repetition
             self.__set_frame_len_sec()  # TODO code repetition
-            self.output_is_exp_sweep_sine = False # TODO code repetition
+            self.output_is_exp_sweep_sine = False  # TODO code repetition
 
     def set_function(self, fcn_name):
         """
@@ -657,7 +652,8 @@ class FunctionGenerator:
         self.angles_rad = np.zeros((self.nr_of_chan, self._output_frame_len), dtype=np.float64)
         self.__set_angles_rad()
 
-    # TODO Think about set_nr_of_chanels method NOTE: it will have to retrun all private methods starting from __new_timebase to broadcast correct shape of data
+    # TODO Think about set_nr_of_chanels method NOTE: it will have to return all private methods starting from
+    #  __new_timebase to broadcast correct shape of data
 
     def check_freqs(self):
         nyquist_freq = self.sample_rate/2
@@ -695,7 +691,6 @@ if __name__ == '__main__':
     mygen = FunctionGenerator(output_frame_len=2333, sample_rate=44000, freq1=133, freq0=100, nr_of_chan=2)
 
     mygen.generate_sine_output_frame()
-    #ax[0].plot(mygen.time_base.T, mygen.output_frame.T, marker=11)
 
     complete = False
     i = 0
@@ -707,13 +702,4 @@ if __name__ == '__main__':
         i += 1
 
     plt.show()
-
-    #ax[1].plot(mygen.time_base.T, mygen.output_frame.T, marker=11)
-
-    #pass
-
-    #ax[2].plot(mygen.time_base.T, mygen.output_frame.T, marker=11)
-
-
-
 
