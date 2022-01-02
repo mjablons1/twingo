@@ -206,8 +206,8 @@ if __name__ == "__main__":
         print('No I/O streaming devices were found')
     else:
         device_names = [name for name in devices_name_to_model_dict.keys()]
-        for i, device_name in enumerate(device_names):
-            print('<' + str(i) + '> ' + device_name + '\n')
+        for itr, device_name in enumerate(device_names):
+            print('<' + str(itr) + '> ' + device_name + '\n')
         user_dev_index = input("<Select> streaming device from the list.>>")
         user_device_name = device_names[int(user_dev_index)]
         daq_model = devices_name_to_model_dict[user_device_name]
