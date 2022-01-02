@@ -88,8 +88,8 @@ def limit(value, limits):
 def clip_list(values, limits):  # TODO this is unnecessary because numpy already implements clip that is high perf.
 
     checksum = sum([abs(value) for value in values])
-    for itr in range(len(values)):
-        values[itr] = limit(values[itr], limits)
+    for i in range(len(values)):
+        values[i] = limit(values[i], limits)
 
     if sum([abs(value) for value in values]) != checksum:
         clipping_occurred = True
@@ -693,13 +693,13 @@ if __name__ == '__main__':
     mygen.generate_sine_output_frame()
 
     complete = False
-    i = 0
+    itr = 0
     while not complete:
         chunk, complete = mygen.next_chunk()
         print(chunk.shape)
-        ax[i].plot(chunk.T, marker=11)
+        ax[itr].plot(chunk.T, marker=11)
         print(complete)
-        i += 1
+        itr += 1
 
     plt.show()
 
