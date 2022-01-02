@@ -427,8 +427,9 @@ class FunctionGenerator:
         self.filter_current_delays_zf = None
         self.__reset_filter_initial_condition()
 
-        self.chunk_len = 1024
-        self.chunk_start = 0
+        self.pa_chunk_len = 1024
+        self.pa_chunk_start = 0
+        self.pa_frame_complete = False
 
 
     def __set_timebase(self):
@@ -670,29 +671,24 @@ class FunctionGenerator:
     def next_chunk(self):
         # This is to support non blocking write on pyAudio for finite measurement
         # this "emulates" wave file reading
-        frame_complete = False
-        chunk_end = self.chunk_start + self.chunk_len
 
-        if chunk_end < self._output_frame_len:
-            chunk = self.output_frame[:, self.chunk_start:chunk_end]
-        elif chunk_end >= self._output_frame_len:
-            chunk = self.output_frame[:, self.chunk_start:]
-            frame_complete = True # this to allow communicating pyaudio.paComplete with the last chunk
+        self.pa_frame_complete = False
+        chunk_end = self.pa_chunk_start + self.pa_chunk_len
+        new_chunk = self.output_frame[:, self.pa_chunk_start:chunk_end]
+        if chunk_end >= self._output_frame_len:
+            self.pa_frame_complete = True
+            self.pa_chunk_start = 0
 
-        if frame_complete:
-            self.chunk_start = 0
-        else:
-            self.chunk_start += self.chunk_len
+        self.pa_chunk_start += self.pa_chunk_len
 
-        return chunk, frame_complete
+        return new_chunk, self.pa_frame_complete
+
 
 if __name__ == '__main__':
     from matplotlib import pyplot as plt
     """
     example use of the signal generator
     """
-
-    # TODO: Develop into nice set of examples using matplotlib and timer to update the plots slowly
 
     fig, ax = plt.subplots(1, 5)
 

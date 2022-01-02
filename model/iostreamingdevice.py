@@ -804,7 +804,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    rate=int(self.ao_fs),
                                    output=True,
                                    stream_callback=self.finite_writing_callback,
-                                   frames_per_buffer=self.function_gen.chunk_len)
+                                   frames_per_buffer=self.function_gen.pa_chunk_len)
 
         just = Event()
         read_delay = self._out_stream.get_output_latency() + config.pyaudio_read_offset_msec / 1000
