@@ -14,6 +14,9 @@ from model.pftltools import FunctionGenerator, wave_bytes_to_ndarray, \
 nidaqmx_is_present = importlib_util.find_spec("nidaqmx") is not None
 pyaudio_is_present = importlib_util.find_spec("pyaudio") is not None
 
+# TODO IDE is crying for me to change this import truncation. ME: OK MOM! (Same can be achieved with try: import)
+#  just remember to re-raise an eventual ImportError later down the code if somebody tries to use the resource that
+#  has a dependency on that failed import. At the same time we can prevent importlib dependency.
 if nidaqmx_is_present:
     import nidaqmx as ni
     from nidaqmx import stream_readers  # has to be done this way. nidaqmx.stream_readers is otherwise not found
@@ -21,6 +24,7 @@ if nidaqmx_is_present:
 
 if pyaudio_is_present:
     import pyaudio
+
     pa = pyaudio.PyAudio()
 
 
@@ -49,7 +53,8 @@ def io_streaming_device_discovery():
             devices_found = dict.fromkeys(system.devices.device_names, NiDaqStreamingDevice)
         except OSError:
             print("NIDAQmx system drivers are probably not present in your system.\n "
-                  "If you do not wish to use NI Harware anyway please uninstall the nidaqmx package from this environment to prevent this warning.")
+                  "If you do not wish to use NI Harware anyway please uninstall the nidaqmx package from this "
+                  "environment to prevent this warning.")
 
     if pyaudio_is_present:
         # check if default I/O devices are present
@@ -62,18 +67,6 @@ def io_streaming_device_discovery():
         except IOError:
             print('No default audio I/O devices could be found in your system.')
 
-    # merge the two dictionaries:
-    # device_list = [ni_devices_found, pa_devices_found]
-    # devices_found = {}
-    # for dict_element in device_list:
-    #    devices_found.update(dict_element)
-    # this replaces above code but its compatible from python 3.5 onwards only.
-    # devices_found = {**ni_devices_found, **pa_devices_found}
-
-    #print('Following devices can be supported:')
-    #print(devices_found)
-    #print('\n')
-
     return devices_found
 
 
@@ -84,8 +77,8 @@ class StereoStreamingDeviceBase(QtCore.QObject):
 
     def __init__(self, device_name):
         QtCore.QObject.__init__(self)
-        self.read_lock = Lock() # TODO perhaps some more complex inheritance is required to have these locks actually work
-        self.mutex = QtCore.QMutex() # TODO perhaps some more complex inheritance is required to have these locks actually work
+        self.read_lock = Lock()
+        self.mutex = QtCore.QMutex()
 
         self.device_name = device_name
         self.STANDARD_SAMPLE_RATES = [192000.0, 176400.0, 96000.0, 88200.0, 48000.0, 44100.0, 22050.0]
@@ -97,7 +90,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.QUEUE_INPUT_FRAMES_ENABLED = True
         self.FILTER_ORDER = 4
 
-        self.limits = self.Limits() # this is just namespace class to separate available HW properties / settings
+        self.limits = self.Limits()  # this is just namespace to separate available HW properties / settings
 
         self._monitor_frame_counter = None
         self.monitor_lock = Lock()
@@ -124,7 +117,8 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.ai_min_val = None
         self.ai_max_val = None
         self.ai_fs = None
-        self.ai_terminal_config = None  # for NI devices just the string representation (.name) of the config enum has to be stored here
+        # for NI devices just the string representation (.name) of the config enum has to be stored here
+        self.ai_terminal_config = None
         self.sw_input_buffer_size = None
         # self.hw_input_buffer_size = None
         # self.input_frames_per_buffer = None
@@ -210,7 +204,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.set_filters()
 
     def start_continuous_acq_n_gen(self):
-        self.cm_measurement_is_running = True # NOTE this line is just reminder to the dev
+        self.cm_measurement_is_running = True  # NOTE this line is just reminder to the dev
         pass
 
     def stop_continuous_acq_n_gen(self):
@@ -229,9 +223,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self._monitor_frame_counter = 0
         self._frames_per_monitor = size // self._input_frame_len
         # self.input_queue = Queue(maxsize=self._frames_per_monitor)
-        # print('Queue maxsize set to: {}'.format(self.input_queue.maxsize))
         self._monitor_storage = np.zeros((self._frames_per_monitor, self._nr_of_active_chans, self._input_frame_len))
-        #print('Monitor storage preallocated shape is {}'.format(self._monitor_storage.shape))
 
     def _put_monitor_frame(self):
         if self._monitor_frame_counter <= self._frames_per_monitor - 1:
@@ -265,7 +257,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
     def get_mode(self):
         return self._acq_mode
 
-    @property # TODO decorate other function properties to remove getter / setter pattern and simplify usage
+    @property  # TODO decorate other function properties to remove getter / setter pattern and simplify usage
     def input_frame_len(self):
         return self._input_frame_len
 
@@ -273,18 +265,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
     def output_frame_len(self):
         return self._output_frame_len
 
-    # def set_start_frequency(self, freq0):
-    #    self.freq0 = freq0
-    #    self.function_gen.set_start_frequency(freq0)
-    # HERE ADD ANY CALCULATION OF IIR FILTER COEFFICIENTS OR FIR FRAME
-
-    # def set_frequency(self, freq1):
-    #    self.freq1 = freq1
-    #    self.function_gen.set_frequency(freq1)
-    # HERE ADD ANY CALCULATION OF IIR FILTER COEFFICIENTS OR FIR FRAME
-
     def set_mode_to_finite(self, fm_meas_time_sec):
-        #print('iostreamingdevice: switching to finite mode')
         self._acq_mode = 'finite'
         self.finite_frame_len_sec = fm_meas_time_sec
         self._input_frame_len = int(fm_meas_time_sec * self.ai_fs)
@@ -298,11 +279,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
                                      'measurement_time_sec) method to specify another measurement length if '
                                      'required.\n')
 
-        #print('Input_frame_len changed to: {}'.format(self._input_frame_len))
-        #print('Input time_base length change to.{}'.format(np.max(np.size(self.input_time_base))))
-
     def set_mode_to_continuous(self):
-        #print('iostreamingdevice: switching to continuous mode')
         self._acq_mode = 'conitnuous'
         self._input_frame_len = self.CM_INPUT_FRAME_LEN
         self.input_frame = np.zeros((self._nr_of_active_chans, self._input_frame_len), dtype=np.float64)
@@ -314,28 +291,27 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.io_start = self.start_continuous_acq_n_gen
         self.io_stop = self.stop_continuous_acq_n_gen
 
-        #print('Input_frame_len changed to: {}'.format(self._input_frame_len))
-        #print('sw_input_buffer_size changed to: {}'.format(self.sw_input_buffer_size))
-        #print('sw_output_buffer_size changed to: {}'.format(self.sw_output_buffer_size))
-
     def _set_input_time_base(self):
         time_series = np.arange(self._input_frame_len, dtype=np.float64) / self.ai_fs
         self.input_time_base = np.tile(time_series, (self._nr_of_active_chans, 1))
 
     def set_filters(self):
         pass
-        # self.output_filter_coefs = sig.bessel(self.FILTER_ORDER, self.freq1 / (self.ao_fs / 2), btype='low', analog=False, output='ba',
-        #                                      fs=self.ao_fs)
-        # self.input_filter_coefs = sig.bessel(self.FILTER_ORDER, self.freq1 / (self.ai_fs / 2), btype='low', analog=False, output='ba',
-        #                                     fs=self.ai_fs)
+        # self.output_filter_coefs = sig.bessel(self.FILTER_ORDER, self.freq1 / (self.ao_fs / 2), btype='low',
+        # analog=False, output='ba', fs=self.ao_fs)
+        #
+        # self.input_filter_coefs = sig.bessel(self.FILTER_ORDER,
+        # self.freq1 / (self.ai_fs / 2), btype='low', analog=False, output='ba', fs=self.ai_fs)
 
     def get_monitor(self):
-        # return monitor_frame by reshaping back from 3 to 2 dimensions (Z(frame),Y(channel),X(timeseries)) to [[ChA],[ChB]] timeseries data)
+        # return monitor_frame by reshaping back from 3 to 2 dimensions
+        # (Z(frame),Y(channel),X(timeseries)) to [[ChA],[ChB]] timeseries data)
         # this simple task looks surprisingly complex in numpy but should still be computationally efficient...
         self.monitor_lock.acquire()
         monitor_window = self._monitor_storage.swapaxes(0, 1).reshape((self._nr_of_active_chans, -1), order='C')
         self.monitor_lock.release()
-        return monitor_window
+        return monitor_window  # TODO this just returns a preview so despite we used locking the view will change
+        # along with the data changes driven by the thread that writes to the _monitor_storage.
 
 
 class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
@@ -353,16 +329,15 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         # transfer frequency out and results in 2x larger output buffer.
         self.CM_OUTPUT_FRAMES_PER_BUFFER = 10
 
-        #self.FILTER_ORDER = 4
         self.AA_OUTPUT_FILTER_ORDER = 8
 
         self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_OVERWRITE_BEHAVIOUR = False
-        self.INPUT_OVERWRITE = False # For this property to take effect you must set applicable OVERRIDE to true.
+        self.INPUT_OVERWRITE = False  # For this property to take effect you must set applicable OVERRIDE to true.
         self.ATTEMPT_OVERRIDE_DEFAULT_INPUT_BUFFER_SIZE = True
         # ON NI6211 the default buffer size settings seems too small. Overwrite errors at high sampling rates are
         # quite frequent.
 
-        self.ATTEMPT_OVERRIDE_DEFAULT_UNDERFLOW_BEHAVIOR_TO_PAUSE = False # E.g. this is not implemented on NI6211
+        self.ATTEMPT_OVERRIDE_DEFAULT_UNDERFLOW_BEHAVIOR_TO_PAUSE = False  # E.g. this is not implemented on NI6211
         self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_REGENERATION_MODE = False
         self.ALLOW_OUTPUT_REGENERATION = True
         # On NI6211 output regen is default but I leave this default to true as fail-safe for adventurous users who
@@ -392,18 +367,22 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.limits.ao_min_rate = self.device_info.ao_min_rate
         self.limits.ao_max_rate = self.device_info.ao_max_rate
         self.limits.ao_voltage_rngs = self.device_info.ao_voltage_rngs[::-1]
-        #print(self.limits.ao_voltage_rngs)
 
         self.limits.ai_physical_chans = [chan.name for chan in self.device_info.ai_physical_chans]
         self.limits.ai_max_single_chan_rate = self.device_info.ai_max_single_chan_rate
 
-        self.limits.ai_max_two_chan_rate = self.device_info.ai_max_single_chan_rate / self._nr_of_active_chans  # TODO here we assume the output is multiplexed but it would be worthwhile to try checking if output supports parallel conversion.
+        # TODO here we assume the output is multiplexed but it would be worthwhile to try checking if output supports
+        #  parallel conversion.
+        self.limits.ai_max_two_chan_rate = self.device_info.ai_max_single_chan_rate / self._nr_of_active_chans
         self.limits.ai_min_rate = self.device_info.ai_min_rate
         self.limits.ai_voltage_rngs = self.device_info.ai_voltage_rngs[::-1]
-        #print(self.limits.ai_voltage_rngs)
 
         self.limits.terminal_configs = [terminal_config.name for terminal_config in
-                                        ni.constants.TerminalConfiguration]  # TODO for the moment I find no implementation of nidaqmx property to check supported terminal configurations , therefore all possible types (including non supported will be listed). Handle later by try except. Alternative is to run a test here and reject the types that cause an exception, for this a temporary task would be required..
+                                        ni.constants.TerminalConfiguration]
+        # TODO for the moment I find no implementation of nidaqmx property to check supported terminal configurations
+        #  , therefore all possible types (including non supported will be listed). Handle later by try except.
+        #  Alternative is to run a test here and reject the types that cause an exception, for this a temporary task
+        #  would be required..
 
         self.limits.supported_input_rates, self.limits.supported_output_rates = self.get_supported_sampling_rates()
 
@@ -498,13 +477,16 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
                 print(exc)
                 print('ATTEMPT_OVERRIDE_DEFAULT_USB_XFER failed')
 
-        self._ao_task.timing.cfg_samp_clk_timing(rate=self.ao_fs, samps_per_chan=self._output_frame_len, #TODO bug on dev1
+        self._ao_task.timing.cfg_samp_clk_timing(rate=self.ao_fs, samps_per_chan=self._output_frame_len,
                                                  sample_mode=ni.constants.AcquisitionType.CONTINUOUS)
 
         if self.ATTEMPT_OVERRIDE_DEFAULT_OUTPUT_REGENERATION_MODE is True:
             try:
                 if self.ALLOW_OUTPUT_REGENERATION is False:
-                    self._ao_task.out_stream.regen_mode = ni.constants.RegenerationMode.DONT_ALLOW_REGENERATION  # prevents DAQ card from repeating output, it just waits for more data to be added to the buffer- > but on cards that cant handle to automatically pause output generation when out of buffer this setting will case random and unexpected crash!
+                    # prevents DAQ card from repeating output, it just waits for more data to be added to the buffer-
+                    # > but on cards that cant handle to automatically pause output generation when out of buffer
+                    # this setting will case random and unexpected crash!
+                    self._ao_task.out_stream.regen_mode = ni.constants.RegenerationMode.DONT_ALLOW_REGENERATION
                 elif self.ALLOW_OUTPUT_REGENERATION is True:
                     self._ao_task.out_stream.regen_mode = ni.constants.RegenerationMode.ALLOW_REGENERATION
             except ni.errors.DaqError as exc:
@@ -513,7 +495,8 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
 
         if self.ATTEMPT_OVERRIDE_DEFAULT_UNDERFLOW_BEHAVIOR_TO_PAUSE is True:
             try:
-                self._ao_task.timing.implicit_underflow_behavior = ni.constants.UnderflowBehavior.AUSE_UNTIL_DATA_AVAILABLE  # SIC!
+                self._ao_task.timing.implicit_underflow_behavior = \
+                    ni.constants.UnderflowBehavior.AUSE_UNTIL_DATA_AVAILABLE  # SIC!
             except ni.errors.DaqError as exc:
                 print(exc)
                 print('Could not OVERRIDE_DEFAULT_UNDEFLOW_BEHAVIOR')
@@ -541,7 +524,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.function_gen.generate()
         buffer_frame = self.function_gen.output_frame
 
-        for frames in range(self.CM_OUTPUT_FRAMES_PER_BUFFER - 1): # TODO UGLY
+        for frames in range(self.CM_OUTPUT_FRAMES_PER_BUFFER - 1):  # TODO UGLY
             self.function_gen.generate()
             buffer_frame = np.append(buffer_frame, self.function_gen.output_frame, axis=1)
 
@@ -619,13 +602,11 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.function_gen.generate()
 
         with ni.Task() as ao_task, ni.Task() as ai_task:
-
             ao_args = {'min_val': self.ao_min_val,
                        'max_val': self.ao_max_val}
 
             ao_task.ao_channels.add_ao_voltage_chan(self.ao_a_name, **ao_args)
             ao_task.ao_channels.add_ao_voltage_chan(self.ao_b_name, **ao_args)
-
 
             ao_task.timing.cfg_samp_clk_timing(self.ao_fs,
                                                samps_per_chan=self._output_frame_len,
@@ -645,7 +626,6 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
             ai_task.triggers.start_trigger.cfg_dig_edge_start_trig("ao/StartTrigger",
                                                                    trigger_edge=ni.constants.Edge.RISING)
 
-            #ao_task.write(np.ascontiguousarray(self.function_gen.output_frame), auto_start=False)
             ao_task.write(self.function_gen.output_frame, auto_start=False)
             ai_task.start()  # arms ai but does not trigger
             ao_task.start()  # triggers both ao an ai simultaneously.
@@ -663,7 +643,8 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
             #                                                           t=self.input_time_base, axis=1, window=None)
 
     def get_ao_buffer_level_prc(self):
-        return int((self.sw_output_buffer_size - self._ao_task.out_stream.space_avail) / self.sw_output_buffer_size * 100)
+        return int(
+            (self.sw_output_buffer_size - self._ao_task.out_stream.space_avail) / self.sw_output_buffer_size * 100)
 
     def get_ai_buffer_level_prc(self):
         return int(self._ai_task.in_stream.avail_samp_per_chan / self.sw_input_buffer_size * 100)
@@ -675,10 +656,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         print('Instantiating PyAudioSoundStreamingDevice')
         self.input_info = pa.get_default_input_device_info()
         self.output_info = pa.get_default_output_device_info()
-        #print(self.input_info)
-        #print(self.output_info)
 
-        #TODO consider renaming to _stream_reader and placing property already in the base class
+        # TODO consider renaming to _stream_reader and placing property already in the base class
         self._in_stream = None
         self._out_stream = None
         self._finite_read_sub_frame_count = None
@@ -694,11 +673,10 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         # Question driver about device properties. Map only first two channels as available since for multichannel
         # audio interfaces pyAudio will not allow you to choose which two you wish to use anyway.
 
-        # map only first two channels as available since for multichannel audio interfaces pyAudio will not allow you
-        # to choose which two you wish to use anyway.
-
         # https://stackoverflow.com/questions/60057146/how-to-select-input-channels-like-mapping-in-sounddevice-with
         # -pyaudio
+
+        # https://github.com/jleb/pyaudio/pull/9
 
         self.limits.ao_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
         # ['Ch:' + str(chan_index) for chan_index in range(self.output_info['maxOutputChannels'])]
@@ -706,7 +684,7 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         self.limits.ao_max_rate = max(self.limits.supported_output_rates)
         self.limits.ao_voltage_rngs = config.default_pyAudio_paFloat32_level_range
         self.limits.ai_physical_chans = ['Ch:' + str(chan_index) for chan_index in range(self._nr_of_active_chans)]
-        #['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
+        # ['Ch:' + str(chan_index) for chan_index in range(self.input_info['maxInputChannels'])]
         self.limits.ai_min_rate = min(self.limits.supported_input_rates)
         self.limits.ai_max_single_chan_rate = max(self.limits.supported_input_rates)
         self.limits.ai_max_two_chan_rate = max(self.limits.supported_input_rates)
@@ -718,10 +696,10 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         output_rates_supported = []
 
         for rate in self.STANDARD_SAMPLE_RATES:
-            input_rates_supported.append(pa.is_format_supported(rate, input_device=self.input_info['index'],
+            input_rates_supported.append(pa.is_format_supported(int(rate), input_device=self.input_info['index'],
                                                                 input_channels=self._nr_of_active_chans,
                                                                 input_format=pyaudio.paFloat32))
-            output_rates_supported.append(pa.is_format_supported(rate, output_device=self.output_info['index'],
+            output_rates_supported.append(pa.is_format_supported(int(rate), output_device=self.output_info['index'],
                                                                  output_channels=self._nr_of_active_chans,
                                                                  output_format=pyaudio.paFloat32))
 
@@ -751,8 +729,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
                                    frames_per_buffer=self.CM_OUTPUT_FRAME_LEN)
 
         self._out_stream.start_stream()
-        #sleep(self._out_stream.get_output_latency())
-        sleep(config.pyaudio_read_offset_msec / 1000) # TODO align this to the finite method
+        # sleep(self._out_stream.get_output_latency())
+        sleep(config.pyaudio_read_offset_msec / 1000)  # TODO align this to the finite method
         self._in_stream.start_stream()
         self.cm_measurement_is_running = True
 
@@ -787,7 +765,8 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         return out_data, status
 
     def start_finite_acq_n_gen(self):
-        self.input_frame = np.zeros((self._nr_of_active_chans, int(self._input_frame_len*1.5)), dtype=np.float64)  # TODO magic
+        # TODO magic
+        self.input_frame = np.zeros((self._nr_of_active_chans, int(self._input_frame_len * 1.5)), dtype=np.float64)
         self._finite_read_sub_frame_count = 0
         self.function_gen.reset_phase()
         self.function_gen.generate()
@@ -842,13 +821,13 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         chunk_bytes = ndarray_to_wave_bytes(chunk, np.float32)
 
         if complete:
-           status = pyaudio.paComplete
+            status = pyaudio.paComplete
         else:
-           status = pyaudio.paContinue
+            status = pyaudio.paContinue
         return chunk_bytes, status  # the first returned data will be written into the output buffer
 
     def get_ao_buffer_level_prc(self):
-        return 'n.a.' # TODO I don't think that pyAudio has got an interface for this kind of info
+        return 'n.a.'  # TODO I don't think that pyAudio has got an interface for this kind of info
 
     def get_ai_buffer_level_prc(self):
         return 'n.a.'
@@ -865,10 +844,12 @@ if __name__ == "__main__":
         plot_data_item_A.setData(daq.input_time_base[0], daq.input_frame[0])
         plot_data_item_B.setData(daq.input_time_base[1], daq.input_frame[1])
 
+
     def update_monitor_plot():
         monitor_window = daq.get_monitor()
         monitor_plot_data_item_A.setData(monitor_window[0])
         monitor_plot_data_item_B.setData(monitor_window[1])
+
 
     try:
         print('\n######## SYSTEM SOUND DEVICE LIST #########')
@@ -886,16 +867,13 @@ if __name__ == "__main__":
         for i in range(len(device_names)):
             print('<' + str(i) + '> ' + device_names[i] + '\n')
         dev_index = input("<Select> streaming device from the list.>>")
-        device_name = device_names[int(dev_index)]
-        daq_model_type = devices_name_to_model_dict[device_name]
-        daq = daq_model_type(device_name)
+        dev_name = device_names[int(dev_index)]
+        daq_model_type = devices_name_to_model_dict[dev_name]
+        daq = daq_model_type(dev_name)
 
         # add changes to default streaming device config here:
         if daq.device_name == 'Dev1':
             daq.ai_terminal_config = 'RSE'
-
-        #for key, value in daq.__dict__.items():
-        #    print(key, '=', value)
 
         app = pg.QtGui.QApplication(sys.argv)
         win = pg.GraphicsWindow(title=daq.device_name)
