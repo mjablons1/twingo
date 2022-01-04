@@ -1,5 +1,3 @@
-# after moving under conda environment import importlib does not make util available for some reason
-from importlib import util as importlib_util
 import numpy as np
 import copy
 from threading import Lock, Event
@@ -10,22 +8,20 @@ from model import config
 from model.pftltools import FunctionGenerator, wave_bytes_to_ndarray, \
     ndarray_to_wave_bytes, nearest_supported_sample_rates, clip_list
 
-# This makes the code compatible with python>=3.4 onwards only
-nidaqmx_is_present = importlib_util.find_spec("nidaqmx") is not None
-pyaudio_is_present = importlib_util.find_spec("pyaudio") is not None
-
-# TODO IDE is crying for me to change this import truncation. ME: OK MOM! (Same can be achieved with try: import)
-#  just remember to re-raise an eventual ImportError later down the code if somebody tries to use the resource that
-#  has a dependency on that failed import. At the same time we can prevent importlib dependency.
-if nidaqmx_is_present:
+try:
     import nidaqmx as ni
     from nidaqmx import stream_readers  # has to be done this way. nidaqmx.stream_readers is otherwise not found
     from nidaqmx import stream_writers
+    nidaqmx_is_present = True
+except ImportError as ni_import_error:
+    nidaqmx_is_present = False
 
-if pyaudio_is_present:
+try:
     import pyaudio
-
     pa = pyaudio.PyAudio()
+    pyaudio_is_present = True
+except ImportError as pa_import_error:
+    pyaudio_is_present = False
 
 
 class Error(Exception):
@@ -57,7 +53,6 @@ def io_streaming_device_discovery():
                   "environment to prevent this warning.")
 
     if pyaudio_is_present:
-        # check if default I/O devices are present
         try:
             def_input_device_name = pa.get_default_input_device_info()["name"]
             def_output_device_name = pa.get_default_output_device_info()["name"]
@@ -310,7 +305,7 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.monitor_lock.acquire()
         monitor_window = self._monitor_storage.swapaxes(0, 1).reshape((self._nr_of_active_chans, -1), order='C')
         self.monitor_lock.release()
-        return monitor_window  # TODO this just returns a preview so despite we used locking the view will change
+        return monitor_window  # TODO this just returns a preview so despite we used locking the view may change
         # along with the data changes driven by the thread that writes to the _monitor_storage.
 
 
@@ -380,7 +375,7 @@ class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
         self.limits.terminal_configs = [terminal_config.name for terminal_config in
                                         ni.constants.TerminalConfiguration]
         # TODO for the moment I find no implementation of nidaqmx property to check supported terminal configurations
-        #  , therefore all possible types (including non supported will be listed). Handle later by try except.
+        #  , therefore all possible types (including non supported) will be listed. Handle later by try except.
         #  Alternative is to run a test here and reject the types that cause an exception, for this a temporary task
         #  would be required..
 
