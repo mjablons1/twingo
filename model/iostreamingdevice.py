@@ -305,8 +305,8 @@ class StereoStreamingDeviceBase(QtCore.QObject):
         self.monitor_lock.acquire()
         monitor_window = self._monitor_storage.swapaxes(0, 1).reshape((self._nr_of_active_chans, -1), order='C')
         self.monitor_lock.release()
-        return monitor_window  # TODO this just returns a preview so despite we used locking the view may change
-        # along with the data changes driven by the thread that writes to the _monitor_storage.
+        return monitor_window
+        # TODO this just returns a view so despite we used locking the underlying data can be changed in another thread.
 
 
 class NiDaqStreamingDevice(StereoStreamingDeviceBase):  # this is model
@@ -691,6 +691,9 @@ class PyAudioSoundStreamingDevice(StereoStreamingDeviceBase):
         output_rates_supported = []
 
         for rate in self.STANDARD_SAMPLE_RATES:
+            # TODO is_format_supported throws ValueError on devices with single microphone that generate single
+            #  channel output. First check number of channels and override the default _nr_of_active_chans = 2
+            #  property.
             input_rates_supported.append(pa.is_format_supported(int(rate), input_device=self.input_info['index'],
                                                                 input_channels=self._nr_of_active_chans,
                                                                 input_format=pyaudio.paFloat32))
@@ -862,9 +865,9 @@ if __name__ == "__main__":
         for i in range(len(device_names)):
             print('<' + str(i) + '> ' + device_names[i] + '\n')
         dev_index = input("<Select> streaming device from the list.>>")
-        dev_name = device_names[int(dev_index)]
-        daq_model_type = devices_name_to_model_dict[dev_name]
-        daq = daq_model_type(dev_name)
+        device_name = device_names[int(dev_index)]
+        daq_model_type = devices_name_to_model_dict[device_name]
+        daq = daq_model_type(device_name)
 
         # add changes to default streaming device config here:
         if daq.device_name == 'Dev1':
