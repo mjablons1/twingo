@@ -164,8 +164,8 @@ class TwingoExec:
         # finite measurement widgets
         self.ui.tabWidget_fm.currentChanged.connect(self.update_current_fm_plot)
         # timeseries
-        self.ui.checkBox_fm_tm_hold_a.toggled.connect(self.hold_fm_tm_plot_a)
-        self.ui.checkBox_fm_tm_hold_b.toggled.connect(self.hold_fm_tm_plot_b)
+        self.ui.checkBox_fm_tm_hold_a.toggled.connect(self.on_checkBox_fm_tm_hold_a_toggled)
+        self.ui.checkBox_fm_tm_hold_b.toggled.connect(self.on_checkBox_fm_tm_hold_b_toggled)
         # spectrum
         self.ui.comboBox_fm_window_size.activated.connect(self.on_comboBox_fm_window_size_activated)
         self.ui.comboBox_fm_window_type.activated.connect(self.on_comboBox_fm_window_type_activated)
@@ -223,7 +223,6 @@ class TwingoExec:
         self.e.set_cm_sp_window(win_type=self.ui.comboBox_cm_window_type.currentText())
 
     def on_comboBox_cm_window_size_activated(self):
-        # TODO RENAME THIS METHOD TO SET_CM_WINDOW
         self.e.set_cm_sp_window(win_size=int(self.ui.comboBox_cm_window_size.currentText()))
 
     def on_comboBox_cm_ph_window_size_activated(self):
@@ -281,7 +280,7 @@ class TwingoExec:
         if self.e.fm_result_y is None:
             raise NoInputData('No finite input data is available. Press START to run a measurement.')
 
-    # TODO this is a lot pattern repetition. Perhaps some design pattern (prototype?) can be used to def any number
+    # TODO this is a lot pattern repetition. A factory pattern could be used to def any number
     #  of hold callbacks with equivalent functionality?
     def on_checkBox_cm_tm_hold_a_toggled(self):
         try:
@@ -343,7 +342,7 @@ class TwingoExec:
         except Exception as exc:
             self.print_qt(exc)
 
-    def hold_fm_tm_plot_a(self):  # TODO THIS SHOULD PROBABLY BE RENAMED
+    def on_checkBox_fm_tm_hold_a_toggled(self):
         try:
             if self.ui.checkBox_fm_tm_hold_a.isChecked():
                 self.fm_tm_plot_hold_data_items[0].setData(self.fm_tm_plot_data_items[0].xData,
@@ -353,7 +352,7 @@ class TwingoExec:
         except Exception as exc:
             self.print_qt(exc)
 
-    def hold_fm_tm_plot_b(self):
+    def on_checkBox_fm_tm_hold_b_toggled(self):
         try:
             if self.ui.checkBox_fm_tm_hold_b.isChecked():
                 self.fm_tm_plot_hold_data_items[1].setData(self.fm_tm_plot_data_items[1].xData,
@@ -736,7 +735,7 @@ class TwingoExec:
         self.ui.tabWidget_main.setTabEnabled(self.FINITE_MEAS_TAB_INDEX, True)
         self.print_qt('>>> Continuous measurement stopped.')
 
-    def on_tabWidget_cm_changed(self):  # TODO rename to on_tabWidget_cm_changed
+    def on_tabWidget_cm_changed(self):
         if self.e.streaming_device.cm_measurement_is_running:  # TODO why is this needed?
             self.disconnect_all_drawing()
             if self.ui.tabWidget_cm.currentIndex() == self.CM_TIMESERIES_TAB_INDEX:
