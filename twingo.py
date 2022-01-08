@@ -297,7 +297,8 @@ class TwingoExec:
         if hold_check_box.isChecked():
             plot_hold_data_item.setData(plot_data_item.xData, plot_data_item.yData)
         else:
-            plot_hold_data_item.clear()
+            # plot_hold_data_item.clear() # for some reason clears the continuous hold plot but not the finite one.
+            plot_hold_data_item.setData([], [])
 
     def on_checkBox_cm_tm_hold_a_toggled(self):
         self.toggle_plot_hold(self.ui.checkBox_cm_tm_hold_a,
