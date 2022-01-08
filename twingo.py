@@ -280,107 +280,74 @@ class TwingoExec:
         if self.e.fm_result_y is None:
             raise NoInputData('No finite input data is available. Press START to run a measurement.')
 
-    # TODO this is a lot pattern repetition. A factory pattern could be used to def any number
-    #  of hold callbacks with equivalent functionality?
+    def toggle_plot_hold(self, hold_check_box, plot_data_item, plot_hold_data_item):
+        """
+        Generic plot hold toggle functionality. If hold_check_box state isChechked() the plot_data_item X and Y data
+        will be set to plot_hold_data_item, else plot_hold_data_item will be cleared.
+
+        :param hold_check_box: checkBox qt object whose state is to be checked.
+        :param plot_data_item: pyqtgraph data_item object with the plot to be held
+        :param plot_hold_data_item: pyqtgraph data_item object which hold plot data is to be set or cleared
+        :return: None
+        """
+        if plot_data_item.xData is None or plot_data_item.yData is None:
+            self.print_qt("No data to hold")
+            return
+
+        if hold_check_box.isChecked():
+            plot_hold_data_item.setData(plot_data_item.xData, plot_data_item.yData)
+        else:
+            plot_hold_data_item.clear()
+
     def on_checkBox_cm_tm_hold_a_toggled(self):
-        try:
-            if self.ui.checkBox_cm_tm_hold_a.isChecked():
-                self.cm_tm_plot_hold_data_items[0].setData(self.cm_tm_plot_data_items[0].xData,
-                                                           self.cm_tm_plot_data_items[0].yData)
-            else:
-                self.cm_tm_plot_hold_data_items[0].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_tm_hold_a,
+                              self.cm_tm_plot_data_items[0],
+                              self.cm_tm_plot_hold_data_items[0])
 
     def on_checkBox_cm_tm_hold_b_toggled(self):
-        try:
-            if self.ui.checkBox_cm_tm_hold_b.isChecked():
-                self.cm_tm_plot_hold_data_items[1].setData(self.cm_tm_plot_data_items[1].xData,
-                                                           self.cm_tm_plot_data_items[1].yData)
-            else:
-                self.cm_tm_plot_hold_data_items[1].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_tm_hold_b,
+                              self.cm_tm_plot_data_items[1],
+                              self.cm_tm_plot_hold_data_items[1])
 
     def on_checkBox_cm_sp_hold_a_toggled(self):
-        try:
-            if self.ui.checkBox_cm_sp_hold_a.isChecked():
-                self.cm_sp_plot_hold_data_items[0].setData(self.cm_sp_plot_data_items[0].xData,
-                                                           self.cm_sp_plot_data_items[0].yData)
-            else:
-                self.cm_sp_plot_hold_data_items[0].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_sp_hold_a,
+                              self.cm_sp_plot_data_items[0],
+                              self.cm_sp_plot_hold_data_items[0])
 
     def on_checkBox_cm_sp_hold_b_toggled(self):
-        try:
-            if self.ui.checkBox_cm_sp_hold_b.isChecked():
-                self.cm_sp_plot_hold_data_items[1].setData(self.cm_sp_plot_data_items[1].xData,
-                                                           self.cm_sp_plot_data_items[1].yData)
-            else:
-                self.cm_sp_plot_hold_data_items[1].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_sp_hold_b,
+                              self.cm_sp_plot_data_items[1],
+                              self.cm_sp_plot_hold_data_items[1])
 
     def on_checkBox_cm_ph_hold_1_toggled(self):
-        try:
-            if self.ui.checkBox_cm_ph_hold_1.isChecked():
-                self.cm_ph_plot_hold_data_items[0].setData(self.cm_ph_plot_data_item.xData,
-                                                           self.cm_ph_plot_data_item.yData)
-            else:
-                self.cm_ph_plot_hold_data_items[0].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_ph_hold_1,
+                              self.cm_ph_plot_data_item,
+                              self.cm_ph_plot_hold_data_items[0])
 
     def on_checkBox_cm_ph_hold_2_toggled(self):
-        try:
-            if self.ui.checkBox_cm_ph_hold_2.isChecked():
-                self.cm_ph_plot_hold_data_items[1].setData(self.cm_ph_plot_data_item.xData,
-                                                           self.cm_ph_plot_data_item.yData)
-            else:
-                self.cm_ph_plot_hold_data_items[1].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_cm_ph_hold_2,
+                              self.cm_ph_plot_data_item,
+                              self.cm_ph_plot_hold_data_items[1])
 
     def on_checkBox_fm_tm_hold_a_toggled(self):
-        try:
-            if self.ui.checkBox_fm_tm_hold_a.isChecked():
-                self.fm_tm_plot_hold_data_items[0].setData(self.fm_tm_plot_data_items[0].xData,
-                                                           self.fm_tm_plot_data_items[0].yData)
-            else:
-                self.fm_tm_plot_hold_data_items[0].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_fm_tm_hold_a,
+                              self.fm_tm_plot_data_items[0],
+                              self.fm_tm_plot_hold_data_items[0])
 
     def on_checkBox_fm_tm_hold_b_toggled(self):
-        try:
-            if self.ui.checkBox_fm_tm_hold_b.isChecked():
-                self.fm_tm_plot_hold_data_items[1].setData(self.fm_tm_plot_data_items[1].xData,
-                                                           self.fm_tm_plot_data_items[1].yData)
-            else:
-                self.fm_tm_plot_hold_data_items[1].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_fm_tm_hold_b,
+                              self.fm_tm_plot_data_items[1],
+                              self.fm_tm_plot_hold_data_items[1])
 
     def on_checkBox_fm_sp_hold_a_toggled(self):
-        try:
-            if self.ui.checkBox_fm_sp_hold_a.isChecked():
-                self.fm_sp_plot_hold_data_items[0].setData(self.fm_sp_plot_data_items[0].xData,
-                                                           self.fm_sp_plot_data_items[0].yData)
-            else:
-                self.fm_sp_plot_hold_data_items[0].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_fm_sp_hold_a,
+                              self.fm_sp_plot_data_items[0],
+                              self.fm_sp_plot_hold_data_items[0])
 
     def on_checkBox_fm_sp_hold_b_toggled(self):
-        try:
-            if self.ui.checkBox_fm_sp_hold_b.isChecked():
-                self.fm_sp_plot_hold_data_items[1].setData(self.fm_sp_plot_data_items[1].xData,
-                                                           self.fm_sp_plot_data_items[1].yData)
-            else:
-                self.fm_sp_plot_hold_data_items[1].clear()
-        except Exception as exc:
-            self.print_qt(exc)
+        self.toggle_plot_hold(self.ui.checkBox_fm_sp_hold_b,
+                              self.fm_sp_plot_data_items[1],
+                              self.fm_sp_plot_hold_data_items[1])
 
     def check_set_line_edit_number(self, line_edit_caller, casting_class, limits=None, num_on_exc=None):
         """
