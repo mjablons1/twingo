@@ -41,12 +41,12 @@ def io_streaming_device_discovery():
     my_daq = devices_found['Dev1']('Dev1')
     """
 
-    devices_found = {}
+    device_name_to_model_found = {}
 
     if nidaqmx_is_present:
         try:
             system = ni.system.System.local()
-            devices_found = dict.fromkeys(system.devices.device_names, NiDaqStreamingDevice)
+            device_name_to_model_found = dict.fromkeys(system.devices.device_names, NiDaqStreamingDevice)
         except OSError:
             print("NIDAQmx system drivers are probably not present in your system.\n "
                   "If you do not wish to use NI Harware anyway please uninstall the nidaqmx package from this "
@@ -58,11 +58,20 @@ def io_streaming_device_discovery():
             def_output_device_name = pa.get_default_output_device_info()["name"]
             dev_name = def_input_device_name + ' / ' + def_output_device_name
             pa_device = {dev_name: PyAudioSoundStreamingDevice}
-            devices_found.update(pa_device)
+            device_name_to_model_found.update(pa_device)
         except IOError:
             print('No default audio I/O devices could be found in your system.')
 
-    return devices_found
+    def device(name):
+
+        def factory():
+            device_model = device_name_to_model_found[name]
+            device_instance = device_model(name)
+            return device_instance
+
+        return factory
+
+    return {name: device(name) for name in device_name_to_model_found}
 
 
 class StereoStreamingDeviceBase(QtCore.QObject):
@@ -866,8 +875,7 @@ if __name__ == "__main__":
             print('<' + str(i) + '> ' + device_names[i] + '\n')
         dev_index = input("<Select> streaming device from the list.>>")
         device_name = device_names[int(dev_index)]
-        daq_model_type = devices_name_to_model_dict[device_name]
-        daq = daq_model_type(device_name)
+        daq = devices_name_to_model_dict[device_name]()
 
         # add changes to default streaming device config here:
         if daq.device_name == 'Dev1':
