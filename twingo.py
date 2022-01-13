@@ -512,8 +512,8 @@ class TwingoExec:
     def on_comboBox_dev_list_activated(self):
         device_name = self.ui.comboBox_dev_list.currentText()
         self.print_qt(f'Device selected: {device_name}')
-        streaming_device_model = self.devices_name_to_model[device_name]
-        self.e = Experiment(streaming_device_model(device_name))
+        device_instance = self.devices_name_to_model[device_name]()
+        self.e = Experiment(device_instance)
         self.configure_gui()
 
     def set_plot_limits(self):
