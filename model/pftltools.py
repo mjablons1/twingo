@@ -647,7 +647,7 @@ class FunctionGenerator:
         Resets generator function argument back to 0. This method should be called between generate() methods in
         order to repeat the first frame for single shot operation.
         """
-        self.phase_reminder = np.float(0)
+        self.phase_reminder = np.float64(0)
         self.__set_phase_reminder()
         self.angles_rad = np.zeros((self.nr_of_chan, self._output_frame_len), dtype=np.float64)
         self.__set_angles_rad()
